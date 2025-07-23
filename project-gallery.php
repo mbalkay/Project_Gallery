@@ -1,13 +1,17 @@
 <?php
 /**
- * Plugin Name: Project Gallery
+ * Plugin Name: Project Gallery Pro
  * Plugin URI: https://github.com/mbalkay/Project_Gallery
- * Description: WordPress proje galerisi eklentisi - projelerinizi kategorilere ayırarak görsel galeri olarak sunmanızı sağlar.
- * Version: 1.0.0
+ * Description: Professional WordPress project gallery plugin with advanced features, analytics, video support, and modern design capabilities.
+ * Version: 2.0.0
  * Author: mbalkay
  * License: GPL v2 or later
  * Text Domain: project-gallery
  * Domain Path: /languages
+ * Requires at least: 5.0
+ * Tested up to: 6.4
+ * Requires PHP: 7.4
+ * Network: false
  */
 
 // Doğrudan erişimi engelle
@@ -16,16 +20,31 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin sabitleri
-define('PROJECT_GALLERY_VERSION', '1.0.0');
+define('PROJECT_GALLERY_VERSION', '2.0.0');
 define('PROJECT_GALLERY_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('PROJECT_GALLERY_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('PROJECT_GALLERY_DB_VERSION', '2.0');
+define('PROJECT_GALLERY_MIN_PHP_VERSION', '7.4');
+define('PROJECT_GALLERY_MIN_WP_VERSION', '5.0');
 
 /**
  * Ana Plugin Sınıfı
  */
 class ProjectGallery {
     
+    private $analytics;
+    private $import_export;
+    private $video;
+    private $performance;
+    private $social;
+    private $search;
+    
     public function __construct() {
+        // Load all advanced features
+        $this->load_dependencies();
+        $this->init_advanced_features();
+        
+        // Core hooks
         add_action('init', array($this, 'init'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'));
@@ -39,6 +58,38 @@ class ProjectGallery {
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_init', array($this, 'settings_init'));
         add_action('wp_head', array($this, 'dynamic_gallery_styles'));
+        
+        // Plugin lifecycle hooks
+        register_activation_hook(__FILE__, array($this, 'activate_plugin'));
+        register_deactivation_hook(__FILE__, array($this, 'deactivate_plugin'));
+        register_uninstall_hook(__FILE__, array('ProjectGallery', 'uninstall_plugin'));
+        
+        // Update checker
+        add_action('wp_loaded', array($this, 'check_for_updates'));
+    }
+    
+    /**
+     * Load all dependencies
+     */
+    private function load_dependencies() {
+        require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-analytics.php';
+        require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-import-export.php';
+        require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-video.php';
+        require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-performance.php';
+        require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-social.php';
+        require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-search.php';
+    }
+    
+    /**
+     * Initialize advanced features
+     */
+    private function init_advanced_features() {
+        $this->analytics = new ProjectGalleryAnalytics();
+        $this->import_export = new ProjectGalleryImportExport();
+        $this->video = new ProjectGalleryVideo();
+        $this->performance = new ProjectGalleryPerformance();
+        $this->social = new ProjectGallerySocial();
+        $this->search = new ProjectGallerySearch();
     }
     
     /**
@@ -1163,35 +1214,185 @@ class ProjectGallery {
         </style>
         <?php
     }
+    
+    /**
+     * Plugin activation
+     */
+    public function activate_plugin() {
+        // Create database tables
+        $this->analytics->create_analytics_table();
+        
+        // Set default options
+        $default_options = array(
+            'layout_type' => 'grid',
+            'columns_count' => 3,
+            'image_spacing' => 15,
+            'image_size' => 'proje-medium',
+            'border_radius' => 8,
+            'hover_effect' => 'scale',
+            'tablet_columns' => 2,
+            'mobile_columns' => 1,
+            'enable_analytics' => true,
+            'enable_social_sharing' => true,
+            'enable_video_support' => true,
+            'enable_advanced_search' => true,
+            'enable_performance_optimization' => true,
+            'lazy_loading' => true,
+            'progressive_loading' => true,
+            'webp_support' => true,
+            'enable_import_export' => true
+        );
+        
+        if (!get_option('project_gallery_options')) {
+            add_option('project_gallery_options', $default_options);
+        }
+        
+        // Set database version
+        add_option('project_gallery_db_version', PROJECT_GALLERY_DB_VERSION);
+        
+        // Flush rewrite rules
+        flush_rewrite_rules();
+        
+        // Schedule analytics cleanup
+        if (!wp_next_scheduled('project_gallery_cleanup_analytics')) {
+            wp_schedule_event(time(), 'weekly', 'project_gallery_cleanup_analytics');
+        }
+    }
+    
+    /**
+     * Plugin deactivation
+     */
+    public function deactivate_plugin() {
+        // Clear scheduled events
+        wp_clear_scheduled_hook('project_gallery_cleanup_analytics');
+        
+        // Flush rewrite rules
+        flush_rewrite_rules();
+    }
+    
+    /**
+     * Plugin uninstall
+     */
+    public static function uninstall_plugin() {
+        global $wpdb;
+        
+        // Remove all plugin options
+        delete_option('project_gallery_options');
+        delete_option('project_gallery_db_version');
+        
+        // Remove analytics data
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}project_gallery_analytics");
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}project_gallery_search_index");
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}project_gallery_search_log");
+        
+        // Remove all project posts and metadata
+        $projects = get_posts(array(
+            'post_type' => 'proje',
+            'posts_per_page' => -1,
+            'post_status' => 'any'
+        ));
+        
+        foreach ($projects as $project) {
+            wp_delete_post($project->ID, true);
+        }
+        
+        // Remove taxonomy terms
+        $terms = get_terms(array(
+            'taxonomy' => 'proje-kategori',
+            'hide_empty' => false
+        ));
+        
+        foreach ($terms as $term) {
+            wp_delete_term($term->term_id, 'proje-kategori');
+        }
+        
+        // Remove cached data
+        wp_cache_flush();
+    }
+    
+    /**
+     * Check for plugin updates
+     */
+    public function check_for_updates() {
+        $current_version = get_option('project_gallery_db_version');
+        
+        if ($current_version !== PROJECT_GALLERY_DB_VERSION) {
+            $this->upgrade_plugin($current_version);
+            update_option('project_gallery_db_version', PROJECT_GALLERY_DB_VERSION);
+        }
+    }
+    
+    /**
+     * Upgrade plugin
+     */
+    private function upgrade_plugin($from_version) {
+        // Update database schema if needed
+        $this->analytics->create_analytics_table();
+        
+        // Add new options with defaults
+        $options = get_option('project_gallery_options', array());
+        $new_options = array(
+            'enable_analytics' => true,
+            'enable_social_sharing' => true,
+            'enable_video_support' => true,
+            'enable_advanced_search' => true,
+            'enable_performance_optimization' => true,
+            'lazy_loading' => true,
+            'progressive_loading' => true,
+            'webp_support' => true,
+            'enable_import_export' => true
+        );
+        
+        foreach ($new_options as $key => $value) {
+            if (!isset($options[$key])) {
+                $options[$key] = $value;
+            }
+        }
+        
+        update_option('project_gallery_options', $options);
+        
+        // Clear cache
+        $this->performance->clear_all_cache();
+    }
+    
+    /**
+     * Get plugin instance for external access
+     */
+    public function get_analytics() {
+        return $this->analytics;
+    }
+    
+    public function get_import_export() {
+        return $this->import_export;
+    }
+    
+    public function get_video() {
+        return $this->video;
+    }
+    
+    public function get_performance() {
+        return $this->performance;
+    }
+    
+    public function get_social() {
+        return $this->social;
+    }
+    
+    public function get_search() {
+        return $this->search;
+    }
 }
 
 // Plugin'i başlat
-new ProjectGallery();
+$project_gallery_instance = new ProjectGallery();
 
 /**
  * Plugin aktivasyonu
  */
 register_activation_hook(__FILE__, 'project_gallery_activation');
 function project_gallery_activation() {
-    // Rewrite rules'ları yenile
-    flush_rewrite_rules();
-    
-    // Varsayılan ayarları ekle
-    $default_options = array(
-        'layout_type' => 'grid',
-        'columns_count' => 3,
-        'image_spacing' => 15,
-        'image_size' => 'proje-medium',
-        'border_radius' => 8,
-        'hover_effect' => 'scale',
-        'tablet_columns' => 2,
-        'mobile_columns' => 1
-    );
-    
-    $existing_options = get_option('project_gallery_options');
-    if (!$existing_options) {
-        add_option('project_gallery_options', $default_options);
-    }
+    global $project_gallery_instance;
+    $project_gallery_instance->activate_plugin();
 }
 
 /**
@@ -1199,6 +1400,6 @@ function project_gallery_activation() {
  */
 register_deactivation_hook(__FILE__, 'project_gallery_deactivation');
 function project_gallery_deactivation() {
-    // Rewrite rules'ları yenile
-    flush_rewrite_rules();
+    global $project_gallery_instance;
+    $project_gallery_instance->deactivate_plugin();
 }
