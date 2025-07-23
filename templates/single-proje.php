@@ -47,24 +47,42 @@ get_header(); ?>
                         
                         if (!empty($image_ids)):
                     ?>
-                        <div class="single-project-gallery">
-                            <?php foreach ($image_ids as $image_id): ?>
-                                <?php if ($image_id): ?>
-                                    <div class="gallery-image" tabindex="0" role="button" aria-label="Resmi büyük boyutta görüntüle">
-                                        <?php 
-                                        echo wp_get_attachment_image(
-                                            $image_id, 
-                                            'proje-medium', 
-                                            false, 
-                                            array(
-                                                'data-full' => wp_get_attachment_image_url($image_id, 'proje-large'),
-                                                'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true)
-                                            )
-                                        ); 
-                                        ?>
-                                    </div>
-                                <?php endif; ?>
-                            <?php endforeach; ?>
+                        <div class="single-project-gallery" data-gallery-count="<?php echo count($image_ids); ?>">
+                            <div class="gallery-header">
+                                <h3 class="gallery-title">📸 Proje Fotoğrafları (<?php echo count($image_ids); ?> Fotoğraf)</h3>
+                                <p class="gallery-subtitle">Fotoğraflara tıklayarak büyük boyutta görüntüleyebilirsiniz</p>
+                            </div>
+                            <div class="gallery-grid">
+                                <?php foreach ($image_ids as $index => $image_id): ?>
+                                    <?php if ($image_id): ?>
+                                        <div class="gallery-image" 
+                                             tabindex="0" 
+                                             role="button" 
+                                             aria-label="Resmi büyük boyutta görüntüle"
+                                             data-index="<?php echo $index; ?>">
+                                            <div class="gallery-image-container">
+                                                <?php 
+                                                echo wp_get_attachment_image(
+                                                    $image_id, 
+                                                    'proje-medium', 
+                                                    false, 
+                                                    array(
+                                                        'data-full' => wp_get_attachment_image_url($image_id, 'full'),
+                                                        'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true)
+                                                    )
+                                                ); 
+                                                ?>
+                                                <div class="gallery-image-overlay">
+                                                    <div class="gallery-image-info">
+                                                        <span class="image-number"><?php echo $index + 1; ?>/<?php echo count($image_ids); ?></span>
+                                                        <span class="zoom-icon">🔍</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </div>
                         </div>
                     <?php 
                         endif;
