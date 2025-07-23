@@ -52,11 +52,16 @@
             var lightboxHTML = `
                 <div id="project-lightbox" class="lightbox">
                     <div class="lightbox-content">
-                        <img src="" alt="" class="lightbox-image">
+                        <div class="lightbox-loading">
+                            <div class="loading-spinner"></div>
+                            <p>Fotoğraf yükleniyor...</p>
+                        </div>
+                        <img src="" alt="" class="lightbox-image" style="display: none;">
                         <button class="lightbox-close" aria-label="Kapat">&times;</button>
                         <button class="lightbox-nav lightbox-prev" aria-label="Önceki">&#8249;</button>
                         <button class="lightbox-nav lightbox-next" aria-label="Sonraki">&#8250;</button>
                         <div class="lightbox-counter"></div>
+                        <div class="lightbox-caption"></div>
                     </div>
                 </div>
             `;
@@ -82,10 +87,12 @@
                 var $img = $(this).find('img');
                 var fullSrc = $img.data('full') || $img.attr('src');
                 var alt = $img.attr('alt') || '';
+                var title = $img.attr('title') || alt;
                 
                 ProjectGalleryJS.currentImages.push({
                     src: fullSrc,
-                    alt: alt
+                    alt: alt,
+                    title: title
                 });
                 
                 if (this === $clickedImage[0]) {
@@ -123,20 +130,32 @@
             var image = this.currentImages[this.currentIndex];
             var $lightbox = $('#project-lightbox');
             var $img = $lightbox.find('.lightbox-image');
+            var $loading = $lightbox.find('.lightbox-loading');
             
             // Show loading state
-            $img.attr('src', '').hide();
+            $img.hide();
+            $loading.show();
             
             // Load new image
             var newImg = new Image();
             newImg.onload = function() {
                 $img.attr('src', image.src).attr('alt', image.alt).fadeIn(300);
+                $loading.hide();
+            };
+            newImg.onerror = function() {
+                $loading.hide();
+                $img.attr('src', '').hide();
+                console.error('Failed to load image:', image.src);
             };
             newImg.src = image.src;
             
             // Update counter
             var counter = (this.currentIndex + 1) + ' / ' + this.currentImages.length;
             $lightbox.find('.lightbox-counter').text(counter);
+            
+            // Update caption
+            var caption = image.title || image.alt || '';
+            $lightbox.find('.lightbox-caption').text(caption).toggle(!!caption);
             
             // Show/hide navigation buttons
             var $prev = $lightbox.find('.lightbox-prev');
