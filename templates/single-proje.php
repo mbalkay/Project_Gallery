@@ -17,7 +17,9 @@ get_header(); ?>
                     
                     <!-- Project Header -->
                     <header class="single-project-header">
+                        <hr class="project-title-divider">
                         <h1 class="single-project-title"><?php the_title(); ?></h1>
+                        <hr class="project-title-divider">
                         
                         <?php 
                         $categories = get_the_terms(get_the_ID(), 'proje_kategorisi');
@@ -32,6 +34,15 @@ get_header(); ?>
                             </div>
                         <?php endif; ?>
                     </header>
+                    
+                    <!-- Featured Image -->
+                    <?php if (has_post_thumbnail()): ?>
+                        <div class="single-project-featured">
+                            <div class="featured-image-container">
+                                <?php the_post_thumbnail('full', array('class' => 'featured-image')); ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                     
                     <!-- Project Content -->
                     <div class="single-project-content">
@@ -48,10 +59,6 @@ get_header(); ?>
                         if (!empty($image_ids)):
                     ?>
                         <div class="single-project-gallery" data-gallery-count="<?php echo count($image_ids); ?>">
-                            <div class="gallery-header">
-                                <h3 class="gallery-title">📸 Proje Fotoğrafları (<?php echo count($image_ids); ?> Fotoğraf)</h3>
-                                <p class="gallery-subtitle">Fotoğraflara tıklayarak büyük boyutta görüntüleyebilirsiniz</p>
-                            </div>
                             <div class="gallery-grid">
                                 <?php foreach ($image_ids as $index => $image_id): ?>
                                     <?php if ($image_id): ?>
@@ -72,12 +79,6 @@ get_header(); ?>
                                                     )
                                                 ); 
                                                 ?>
-                                                <div class="gallery-image-overlay">
-                                                    <div class="gallery-image-info">
-                                                        <span class="image-number"><?php echo $index + 1; ?>/<?php echo count($image_ids); ?></span>
-                                                        <span class="zoom-icon">🔍</span>
-                                                    </div>
-                                                </div>
                                             </div>
                                         </div>
                                     <?php endif; ?>
