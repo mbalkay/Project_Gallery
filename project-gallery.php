@@ -28,6 +28,7 @@ class ProjectGallery {
     public function __construct() {
         add_action('init', array($this, 'init'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
+        add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'));
         add_action('add_meta_boxes', array($this, 'add_meta_boxes'));
         add_action('save_post', array($this, 'save_project_gallery'));
         add_shortcode('proje_galerisi', array($this, 'project_gallery_shortcode'));
@@ -35,6 +36,9 @@ class ProjectGallery {
         add_filter('archive_template', array($this, 'archive_project_template'));
         add_action('wp_ajax_get_project_images', array($this, 'ajax_get_project_images'));
         add_action('wp_ajax_nopriv_get_project_images', array($this, 'ajax_get_project_images'));
+        add_action('admin_menu', array($this, 'add_admin_menu'));
+        add_action('admin_init', array($this, 'settings_init'));
+        add_action('wp_head', array($this, 'dynamic_gallery_styles'));
     }
     
     /**
@@ -709,6 +713,456 @@ class ProjectGallery {
         
         wp_send_json_success($images);
     }
+    
+    /**
+     * Admin menüsü ekle
+     */
+    public function add_admin_menu() {
+        add_submenu_page(
+            'edit.php?post_type=proje',
+            'Galeri Ayarları',
+            'Galeri Ayarları',
+            'manage_options',
+            'project-gallery-settings',
+            array($this, 'settings_page')
+        );
+    }
+    
+    /**
+     * Ayarları kaydet
+     */
+    public function settings_init() {
+        register_setting('project_gallery_settings', 'project_gallery_options');
+        
+        // Ana galeri ayarları
+        add_settings_section(
+            'project_gallery_main_section',
+            'Ana Galeri Ayarları',
+            array($this, 'settings_section_callback'),
+            'project_gallery_settings'
+        );
+        
+        // Layout tipi
+        add_settings_field(
+            'layout_type',
+            'Galeri Düzen Tipi',
+            array($this, 'layout_type_callback'),
+            'project_gallery_settings',
+            'project_gallery_main_section'
+        );
+        
+        // Sütun sayısı
+        add_settings_field(
+            'columns_count',
+            'Sütun Sayısı',
+            array($this, 'columns_count_callback'),
+            'project_gallery_settings',
+            'project_gallery_main_section'
+        );
+        
+        // Resim aralığı
+        add_settings_field(
+            'image_spacing',
+            'Resim Aralığı (px)',
+            array($this, 'image_spacing_callback'),
+            'project_gallery_settings',
+            'project_gallery_main_section'
+        );
+        
+        // Resim boyutu
+        add_settings_field(
+            'image_size',
+            'Resim Boyutu',
+            array($this, 'image_size_callback'),
+            'project_gallery_settings',
+            'project_gallery_main_section'
+        );
+        
+        // Köşe yuvarlaklığı
+        add_settings_field(
+            'border_radius',
+            'Köşe Yuvarlaklığı (px)',
+            array($this, 'border_radius_callback'),
+            'project_gallery_settings',
+            'project_gallery_main_section'
+        );
+        
+        // Hover efekti
+        add_settings_field(
+            'hover_effect',
+            'Hover Efekti',
+            array($this, 'hover_effect_callback'),
+            'project_gallery_settings',
+            'project_gallery_main_section'
+        );
+        
+        // Responsive ayarları
+        add_settings_section(
+            'project_gallery_responsive_section',
+            'Responsive Ayarları',
+            array($this, 'responsive_section_callback'),
+            'project_gallery_settings'
+        );
+        
+        // Tablet sütun sayısı
+        add_settings_field(
+            'tablet_columns',
+            'Tablet Sütun Sayısı',
+            array($this, 'tablet_columns_callback'),
+            'project_gallery_settings',
+            'project_gallery_responsive_section'
+        );
+        
+        // Mobil sütun sayısı
+        add_settings_field(
+            'mobile_columns',
+            'Mobil Sütun Sayısı',
+            array($this, 'mobile_columns_callback'),
+            'project_gallery_settings',
+            'project_gallery_responsive_section'
+        );
+    }
+    
+    /**
+     * Ayarlar sayfası
+     */
+    public function settings_page() {
+        ?>
+        <div class="wrap">
+            <h1>🎨 Proje Galerisi Ayarları</h1>
+            <p>Galeri görünümünü özelleştirmek için aşağıdaki ayarları kullanın.</p>
+            
+            <form action="options.php" method="post">
+                <?php
+                settings_fields('project_gallery_settings');
+                do_settings_sections('project_gallery_settings');
+                ?>
+                
+                <div class="gallery-preview-section">
+                    <h2>🖼️ Galeri Önizleme</h2>
+                    <div id="gallery-preview" class="gallery-preview">
+                        <div class="preview-item"><div class="preview-image">1</div></div>
+                        <div class="preview-item"><div class="preview-image">2</div></div>
+                        <div class="preview-item"><div class="preview-image">3</div></div>
+                        <div class="preview-item"><div class="preview-image">4</div></div>
+                        <div class="preview-item"><div class="preview-image">5</div></div>
+                        <div class="preview-item"><div class="preview-image">6</div></div>
+                    </div>
+                </div>
+                
+                <?php submit_button('Ayarları Kaydet'); ?>
+            </form>
+            
+            <style>
+            .gallery-preview-section {
+                background: #f1f1f1;
+                padding: 20px;
+                border-radius: 8px;
+                margin: 20px 0;
+            }
+            .gallery-preview {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 15px;
+                margin-top: 15px;
+                max-width: 600px;
+            }
+            .preview-item {
+                background: white;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+            .preview-image {
+                background: linear-gradient(45deg, #007cba, #00a0d2);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 120px;
+                font-weight: bold;
+                font-size: 18px;
+            }
+            .form-table th {
+                width: 200px;
+            }
+            .form-table td {
+                padding: 15px 10px;
+            }
+            .description {
+                font-style: italic;
+                color: #666;
+                margin-top: 5px;
+            }
+            </style>
+            
+            <script>
+            jQuery(document).ready(function($) {
+                function updatePreview() {
+                    var columns = $('#columns_count').val() || 3;
+                    var spacing = $('#image_spacing').val() || 15;
+                    var borderRadius = $('#border_radius').val() || 8;
+                    var layoutType = $('#layout_type').val() || 'grid';
+                    
+                    var preview = $('#gallery-preview');
+                    preview.css({
+                        'grid-template-columns': 'repeat(' + columns + ', 1fr)',
+                        'gap': spacing + 'px'
+                    });
+                    
+                    $('.preview-item').css('border-radius', borderRadius + 'px');
+                    
+                    if (layoutType === 'masonry') {
+                        $('.preview-image').each(function(i) {
+                            $(this).css('height', (100 + (i % 3) * 40) + 'px');
+                        });
+                    } else {
+                        $('.preview-image').css('height', '120px');
+                    }
+                }
+                
+                $('#columns_count, #image_spacing, #border_radius, #layout_type').on('change input', updatePreview);
+                updatePreview();
+            });
+            </script>
+        </div>
+        <?php
+    }
+    
+    /**
+     * Callback fonksiyonları
+     */
+    public function settings_section_callback() {
+        echo '<p>Galeri düzenini ve görünümünü bu ayarlarla özelleştirin.</p>';
+    }
+    
+    public function responsive_section_callback() {
+        echo '<p>Farklı ekran boyutları için sütun sayılarını ayarlayın.</p>';
+    }
+    
+    public function layout_type_callback() {
+        $options = get_option('project_gallery_options');
+        $value = isset($options['layout_type']) ? $options['layout_type'] : 'grid';
+        ?>
+        <select id="layout_type" name="project_gallery_options[layout_type]">
+            <option value="grid" <?php selected($value, 'grid'); ?>>📐 Grid (Düzenli Izgara)</option>
+            <option value="masonry" <?php selected($value, 'masonry'); ?>>🧱 Masonry (Tuğla Düzeni)</option>
+            <option value="justified" <?php selected($value, 'justified'); ?>>📏 Justified (Hizalanmış)</option>
+            <option value="flexible" <?php selected($value, 'flexible'); ?>>🔄 Flexible (Esnek)</option>
+        </select>
+        <p class="description">Galeri düzen tipini seçin. Grid = düzenli, Masonry = farklı yükseklikler</p>
+        <?php
+    }
+    
+    public function columns_count_callback() {
+        $options = get_option('project_gallery_options');
+        $value = isset($options['columns_count']) ? $options['columns_count'] : 3;
+        ?>
+        <input type="range" id="columns_count" name="project_gallery_options[columns_count]" 
+               min="1" max="6" value="<?php echo esc_attr($value); ?>" 
+               oninput="this.nextElementSibling.value = this.value">
+        <output><?php echo esc_attr($value); ?></output> sütun
+        <p class="description">Masaüstü için sütun sayısı (1-6 arası)</p>
+        <?php
+    }
+    
+    public function image_spacing_callback() {
+        $options = get_option('project_gallery_options');
+        $value = isset($options['image_spacing']) ? $options['image_spacing'] : 15;
+        ?>
+        <input type="range" id="image_spacing" name="project_gallery_options[image_spacing]" 
+               min="0" max="50" value="<?php echo esc_attr($value); ?>" 
+               oninput="this.nextElementSibling.value = this.value">
+        <output><?php echo esc_attr($value); ?></output> px
+        <p class="description">Resimler arası boşluk (0-50px arası)</p>
+        <?php
+    }
+    
+    public function image_size_callback() {
+        $options = get_option('project_gallery_options');
+        $value = isset($options['image_size']) ? $options['image_size'] : 'proje-medium';
+        ?>
+        <select name="project_gallery_options[image_size]">
+            <option value="proje-thumbnail" <?php selected($value, 'proje-thumbnail'); ?>>Küçük (300x200)</option>
+            <option value="proje-medium" <?php selected($value, 'proje-medium'); ?>>Orta (600x400)</option>
+            <option value="proje-large" <?php selected($value, 'proje-large'); ?>>Büyük (1200x800)</option>
+            <option value="full" <?php selected($value, 'full'); ?>>Orijinal Boyut</option>
+        </select>
+        <p class="description">Galeride gösterilecek resim boyutunu seçin</p>
+        <?php
+    }
+    
+    public function border_radius_callback() {
+        $options = get_option('project_gallery_options');
+        $value = isset($options['border_radius']) ? $options['border_radius'] : 8;
+        ?>
+        <input type="range" id="border_radius" name="project_gallery_options[border_radius]" 
+               min="0" max="30" value="<?php echo esc_attr($value); ?>" 
+               oninput="this.nextElementSibling.value = this.value">
+        <output><?php echo esc_attr($value); ?></output> px
+        <p class="description">Köşe yuvarlaklığı (0-30px arası)</p>
+        <?php
+    }
+    
+    public function hover_effect_callback() {
+        $options = get_option('project_gallery_options');
+        $value = isset($options['hover_effect']) ? $options['hover_effect'] : 'scale';
+        ?>
+        <select name="project_gallery_options[hover_effect]">
+            <option value="none" <?php selected($value, 'none'); ?>>Yok</option>
+            <option value="scale" <?php selected($value, 'scale'); ?>>↗️ Büyütme</option>
+            <option value="lift" <?php selected($value, 'lift'); ?>>⬆️ Kaldırma</option>
+            <option value="fade" <?php selected($value, 'fade'); ?>>💫 Solma</option>
+            <option value="rotate" <?php selected($value, 'rotate'); ?>>🔄 Döndürme</option>
+        </select>
+        <p class="description">Resim üzerine gelindiğinde gösterilecek efekt</p>
+        <?php
+    }
+    
+    public function tablet_columns_callback() {
+        $options = get_option('project_gallery_options');
+        $value = isset($options['tablet_columns']) ? $options['tablet_columns'] : 2;
+        ?>
+        <input type="range" name="project_gallery_options[tablet_columns]" 
+               min="1" max="4" value="<?php echo esc_attr($value); ?>" 
+               oninput="this.nextElementSibling.value = this.value">
+        <output><?php echo esc_attr($value); ?></output> sütun
+        <p class="description">Tablet (768px-1024px) için sütun sayısı</p>
+        <?php
+    }
+    
+    public function mobile_columns_callback() {
+        $options = get_option('project_gallery_options');
+        $value = isset($options['mobile_columns']) ? $options['mobile_columns'] : 1;
+        ?>
+        <input type="range" name="project_gallery_options[mobile_columns]" 
+               min="1" max="3" value="<?php echo esc_attr($value); ?>" 
+               oninput="this.nextElementSibling.value = this.value">
+        <output><?php echo esc_attr($value); ?></output> sütun
+        <p class="description">Mobil (max 768px) için sütun sayısı</p>
+        <?php
+    }
+    
+    /**
+     * Admin için script ve stiller
+     */
+    public function admin_enqueue_scripts($hook) {
+        if ($hook === 'proje_page_project-gallery-settings') {
+            wp_enqueue_script('jquery');
+        }
+    }
+    
+    /**
+     * Dinamik galeri stilleri
+     */
+    public function dynamic_gallery_styles() {
+        if (!is_singular('proje')) return;
+        
+        $options = get_option('project_gallery_options');
+        $layout_type = isset($options['layout_type']) ? $options['layout_type'] : 'grid';
+        $columns = isset($options['columns_count']) ? $options['columns_count'] : 3;
+        $spacing = isset($options['image_spacing']) ? $options['image_spacing'] : 15;
+        $border_radius = isset($options['border_radius']) ? $options['border_radius'] : 8;
+        $hover_effect = isset($options['hover_effect']) ? $options['hover_effect'] : 'scale';
+        $tablet_columns = isset($options['tablet_columns']) ? $options['tablet_columns'] : 2;
+        $mobile_columns = isset($options['mobile_columns']) ? $options['mobile_columns'] : 1;
+        
+        ?>
+        <style id="project-gallery-dynamic-styles">
+        .gallery-grid {
+            <?php if ($layout_type === 'masonry'): ?>
+            display: grid;
+            grid-template-columns: repeat(<?php echo $columns; ?>, 1fr);
+            grid-auto-rows: 10px;
+            gap: <?php echo $spacing; ?>px;
+            <?php elseif ($layout_type === 'justified'): ?>
+            display: flex;
+            flex-wrap: wrap;
+            gap: <?php echo $spacing; ?>px;
+            <?php elseif ($layout_type === 'flexible'): ?>
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: <?php echo $spacing; ?>px;
+            <?php else: ?>
+            display: grid;
+            grid-template-columns: repeat(<?php echo $columns; ?>, 1fr);
+            gap: <?php echo $spacing; ?>px;
+            <?php endif; ?>
+        }
+        
+        .gallery-image {
+            border-radius: <?php echo $border_radius; ?>px;
+        }
+        
+        .gallery-image-container {
+            border-radius: <?php echo max(0, $border_radius - 2); ?>px;
+        }
+        
+        <?php if ($layout_type === 'masonry'): ?>
+        .gallery-image:nth-child(3n+1) { grid-row-end: span 20; }
+        .gallery-image:nth-child(3n+2) { grid-row-end: span 25; }
+        .gallery-image:nth-child(3n+3) { grid-row-end: span 22; }
+        <?php endif; ?>
+        
+        <?php if ($layout_type === 'justified'): ?>
+        .gallery-image {
+            flex: 1 0 calc(<?php echo (100 / $columns); ?>% - <?php echo $spacing; ?>px);
+            height: 250px;
+        }
+        .gallery-image-container {
+            height: 100%;
+        }
+        .gallery-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        <?php endif; ?>
+        
+        <?php if ($hover_effect === 'scale'): ?>
+        .gallery-image:hover .gallery-image-container img {
+            transform: scale(1.05);
+        }
+        <?php elseif ($hover_effect === 'lift'): ?>
+        .gallery-image:hover {
+            transform: translateY(-5px);
+        }
+        <?php elseif ($hover_effect === 'fade'): ?>
+        .gallery-image:hover {
+            opacity: 0.8;
+        }
+        <?php elseif ($hover_effect === 'rotate'): ?>
+        .gallery-image:hover .gallery-image-container img {
+            transform: rotate(2deg) scale(1.02);
+        }
+        <?php endif; ?>
+        
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .gallery-grid {
+                grid-template-columns: repeat(<?php echo $tablet_columns; ?>, 1fr) !important;
+            }
+            <?php if ($layout_type === 'justified'): ?>
+            .gallery-image {
+                flex: 1 0 calc(<?php echo (100 / $tablet_columns); ?>% - <?php echo $spacing; ?>px);
+            }
+            <?php endif; ?>
+        }
+        
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: repeat(<?php echo $mobile_columns; ?>, 1fr) !important;
+                gap: <?php echo max(10, $spacing - 5); ?>px;
+            }
+            <?php if ($layout_type === 'justified'): ?>
+            .gallery-image {
+                flex: 1 0 calc(<?php echo (100 / $mobile_columns); ?>% - <?php echo max(10, $spacing - 5); ?>px);
+            }
+            <?php endif; ?>
+        }
+        </style>
+        <?php
+    }
 }
 
 // Plugin'i başlat
@@ -721,6 +1175,23 @@ register_activation_hook(__FILE__, 'project_gallery_activation');
 function project_gallery_activation() {
     // Rewrite rules'ları yenile
     flush_rewrite_rules();
+    
+    // Varsayılan ayarları ekle
+    $default_options = array(
+        'layout_type' => 'grid',
+        'columns_count' => 3,
+        'image_spacing' => 15,
+        'image_size' => 'proje-medium',
+        'border_radius' => 8,
+        'hover_effect' => 'scale',
+        'tablet_columns' => 2,
+        'mobile_columns' => 1
+    );
+    
+    $existing_options = get_option('project_gallery_options');
+    if (!$existing_options) {
+        add_option('project_gallery_options', $default_options);
+    }
 }
 
 /**

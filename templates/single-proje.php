@@ -57,8 +57,14 @@ get_header(); ?>
                         $image_ids = array_filter($image_ids);
                         
                         if (!empty($image_ids)):
+                            // Get gallery settings
+                            $options = get_option('project_gallery_options');
+                            $image_size = isset($options['image_size']) ? $options['image_size'] : 'proje-medium';
+                            $layout_type = isset($options['layout_type']) ? $options['layout_type'] : 'grid';
                     ?>
-                        <div class="single-project-gallery" data-gallery-count="<?php echo count($image_ids); ?>">
+                        <div class="single-project-gallery" 
+                             data-gallery-count="<?php echo count($image_ids); ?>"
+                             data-layout="<?php echo esc_attr($layout_type); ?>">
                             <div class="gallery-grid">
                                 <?php foreach ($image_ids as $index => $image_id): ?>
                                     <?php if ($image_id): ?>
@@ -71,7 +77,7 @@ get_header(); ?>
                                                 <?php 
                                                 echo wp_get_attachment_image(
                                                     $image_id, 
-                                                    'proje-medium', 
+                                                    $image_size, 
                                                     false, 
                                                     array(
                                                         'data-full' => wp_get_attachment_image_url($image_id, 'full'),
