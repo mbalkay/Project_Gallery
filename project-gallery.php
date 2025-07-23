@@ -245,99 +245,49 @@ class ProjectGallery {
                 $('.gallery-empty').toggle(!hasImages);
             }
             
-            // Bulk add photos
-            function openMediaFrame(multiple = true) {
-                if (frame) {
-                    frame.open();
-                    return;
+            // Add new images to gallery
+            function addImagesToGallery(selection, replace = false) {
+                if (replace) {
+                    currentImages = [];
+                    $('#project-gallery-preview').empty();
                 }
                 
-                frame = wp.media({
-                    title: multiple ? 'Toplu Fotoğraf Seç' : 'Fotoğraf Seç',
-                    button: {
-                        text: multiple ? 'Fotoğrafları Ekle' : 'Fotoğraf Ekle'
-                    },
-                    multiple: multiple
-                });
-                
-                frame.on('select', function() {
-                    var selection = frame.state().get('selection');
-                    var newIds = [];
-                    var previewHtml = '';
+                selection.map(function(attachment) {
+                    attachment = attachment.toJSON();
+                    var imageId = attachment.id.toString();
                     
-                    selection.map(function(attachment) {
-                        attachment = attachment.toJSON();
-                        if (currentImages.indexOf(attachment.id.toString()) === -1) {
-                            newIds.push(attachment.id);
-                            currentImages.push(attachment.id.toString());
-                        }
-                    });
-                    
-                    // Regenerate all preview HTML
-                    currentImages.forEach(function(imageId) {
-                        if (imageId) {
-                            var attachment = selection.findWhere({id: parseInt(imageId)});
-                            if (attachment) {
-                                attachment = attachment.toJSON();
-                            } else {
-                                // For existing images, we need to make an AJAX call or use a simpler approach
-                                // For now, let's just create a placeholder structure
-                                attachment = {
-                                    id: imageId,
-                                    sizes: {
-                                        thumbnail: {
-                                            url: '' // Will be populated by existing images
-                                        }
-                                    },
-                                    filename: 'image-' + imageId + '.jpg'
-                                };
-                            }
-                            
-                            previewHtml += '<div class="gallery-image-preview" data-id="' + imageId + '">';
-                            previewHtml += '<div class="image-container">';
-                            if (attachment.sizes && attachment.sizes.thumbnail) {
-                                previewHtml += '<img src="' + attachment.sizes.thumbnail.url + '" />';
-                            }
-                            previewHtml += '<div class="image-overlay">';
-                            previewHtml += '<button type="button" class="remove-gallery-image" data-id="' + imageId + '" title="Kaldır">×</button>';
-                            previewHtml += '<div class="image-info">';
-                            previewHtml += '<span class="image-name">' + (attachment.filename || 'image.jpg') + '</span>';
-                            previewHtml += '</div></div></div></div>';
-                        }
-                    });
-                    
-                    $('#project-gallery-images').val(currentImages.join(','));
-                    
-                    // If we have new images, rebuild the entire preview
-                    if (newIds.length > 0) {
-                        // Simpler approach: reload the page or trigger a refresh
-                        // For now, just append new images
-                        newIds.forEach(function(imageId) {
-                            var attachment = selection.findWhere({id: parseInt(imageId)}).toJSON();
-                            var newImageHtml = '<div class="gallery-image-preview" data-id="' + imageId + '">';
-                            newImageHtml += '<div class="image-container">';
-                            newImageHtml += '<img src="' + attachment.sizes.thumbnail.url + '" />';
-                            newImageHtml += '<div class="image-overlay">';
-                            newImageHtml += '<button type="button" class="remove-gallery-image" data-id="' + imageId + '" title="Kaldır">×</button>';
-                            newImageHtml += '<div class="image-info">';
-                            newImageHtml += '<span class="image-name">' + attachment.filename + '</span>';
-                            newImageHtml += '</div></div></div></div>';
-                            $('#project-gallery-preview').append(newImageHtml);
-                        });
+                    // Check if image already exists
+                    if (currentImages.indexOf(imageId) === -1) {
+                        currentImages.push(imageId);
+                        
+                        // Add to preview
+                        var newImageHtml = '<div class="gallery-image-preview" data-id="' + imageId + '">';
+                        newImageHtml += '<div class="image-container">';
+                        newImageHtml += '<img src="' + attachment.sizes.thumbnail.url + '" />';
+                        newImageHtml += '<div class="image-overlay">';
+                        newImageHtml += '<button type="button" class="remove-gallery-image" data-id="' + imageId + '" title="Kaldır">×</button>';
+                        newImageHtml += '<div class="image-info">';
+                        newImageHtml += '<span class="image-name">' + attachment.filename + '</span>';
+                        newImageHtml += '</div></div></div></div>';
+                        $('#project-gallery-preview').append(newImageHtml);
                     }
-                    
-                    updateUI();
-                    initSortable();
                 });
                 
-                frame.open();
+                $('#project-gallery-images').val(currentImages.join(','));
+                updateUI();
+                initSortable();
             }
             
             // Initialize sortable functionality
             function initSortable() {
+                if ($('#project-gallery-preview').hasClass('ui-sortable')) {
+                    $('#project-gallery-preview').sortable('destroy');
+                }
+                
                 $('#project-gallery-preview').sortable({
                     items: '.gallery-image-preview',
                     placeholder: 'gallery-sortable-placeholder',
+                    tolerance: 'pointer',
                     update: function() {
                         var newOrder = [];
                         $(this).find('.gallery-image-preview').each(function() {
@@ -349,17 +299,35 @@ class ProjectGallery {
                 });
             }
             
+            // Open media frame
+            function openMediaFrame(multiple = true, replace = false) {
+                frame = wp.media({
+                    title: multiple ? 'Toplu Fotoğraf Seç' : 'Fotoğraf Seç',
+                    button: {
+                        text: multiple ? 'Fotoğrafları Ekle' : 'Fotoğraf Ekle'
+                    },
+                    multiple: multiple
+                });
+                
+                frame.on('select', function() {
+                    var selection = frame.state().get('selection');
+                    addImagesToGallery(selection, replace);
+                });
+                
+                frame.open();
+            }
+            
             // Event handlers
             $('#project-gallery-button, #project-gallery-button-empty').on('click', function(e) {
                 e.preventDefault();
                 updateCurrentImages();
-                openMediaFrame(true);
+                openMediaFrame(true, false);
             });
             
             $('#project-gallery-add-single').on('click', function(e) {
                 e.preventDefault();
                 updateCurrentImages();
-                openMediaFrame(false);
+                openMediaFrame(false, false);
             });
             
             $('#project-gallery-clear').on('click', function(e) {
@@ -379,8 +347,10 @@ class ProjectGallery {
                 });
                 
                 $('#project-gallery-images').val(currentImages.join(','));
-                $(this).closest('.gallery-image-preview').remove();
-                updateUI();
+                $(this).closest('.gallery-image-preview').fadeOut(300, function() {
+                    $(this).remove();
+                    updateUI();
+                });
             });
             
             // Initialize
