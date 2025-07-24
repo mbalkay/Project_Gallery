@@ -1012,6 +1012,49 @@ class ProjectGalleryAdvancedLightbox {
     }
     
     /**
+     * WordPress Settings API ile lightbox ayarlarını kaydet
+     */
+    public function register_lightbox_settings() {
+        register_setting(
+            'project_gallery_lightbox_settings_group',
+            'project_gallery_lightbox_settings',
+            array(
+                'type' => 'array',
+                'sanitize_callback' => array($this, 'sanitize_lightbox_settings'),
+                'default' => $this->get_default_settings()
+            )
+        );
+    }
+    
+    /**
+     * Lightbox ayarları sanitization
+     */
+    public function sanitize_lightbox_settings($input) {
+        $sanitized = array();
+        $defaults = $this->get_default_settings();
+        
+        foreach ($defaults as $key => $default_value) {
+            if (isset($input[$key])) {
+                if (is_bool($default_value)) {
+                    $sanitized[$key] = (bool) $input[$key];
+                } elseif (is_int($default_value)) {
+                    $sanitized[$key] = intval($input[$key]);
+                } elseif (is_float($default_value)) {
+                    $sanitized[$key] = floatval($input[$key]);
+                } elseif (is_array($default_value)) {
+                    $sanitized[$key] = (array) $input[$key];
+                } else {
+                    $sanitized[$key] = sanitize_text_field($input[$key]);
+                }
+            } else {
+                $sanitized[$key] = $default_value;
+            }
+        }
+        
+        return $sanitized;
+    }
+    
+    /**
      * Lightbox ayarları kaydet
      */
     private function save_lightbox_settings() {
