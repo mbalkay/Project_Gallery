@@ -848,6 +848,68 @@ class ProjectGallery {
             'project_gallery_main_section'
         );
         
+        // Hover özelleştirme ayarları
+        add_settings_section(
+            'project_gallery_hover_section',
+            '🎨 Hover Efekt Özelleştirme',
+            array($this, 'hover_section_callback'),
+            'project_gallery_settings'
+        );
+        
+        // Overlay metin rengi
+        add_settings_field(
+            'hover_text_color',
+            'Overlay Metin Rengi',
+            array($this, 'hover_text_color_callback'),
+            'project_gallery_settings',
+            'project_gallery_hover_section'
+        );
+        
+        // Overlay arkaplan rengi
+        add_settings_field(
+            'hover_bg_color',
+            'Overlay Arkaplan Rengi',
+            array($this, 'hover_bg_color_callback'),
+            'project_gallery_settings',
+            'project_gallery_hover_section'
+        );
+        
+        // Overlay gradient başlangıç rengi
+        add_settings_field(
+            'hover_gradient_start',
+            'Gradient Başlangıç Rengi',
+            array($this, 'hover_gradient_start_callback'),
+            'project_gallery_settings',
+            'project_gallery_hover_section'
+        );
+        
+        // Overlay gradient bitiş rengi
+        add_settings_field(
+            'hover_gradient_end',
+            'Gradient Bitiş Rengi',
+            array($this, 'hover_gradient_end_callback'),
+            'project_gallery_settings',
+            'project_gallery_hover_section'
+        );
+        
+        // Hover efekt şiddeti
+        add_settings_field(
+            'hover_intensity',
+            'Efekt Şiddeti',
+            array($this, 'hover_intensity_callback'),
+            'project_gallery_settings',
+            'project_gallery_hover_section'
+        );
+        
+        // Kategori etiket arka plan rengi
+        add_settings_field(
+            'category_bg_color',
+            'Kategori Etiket Arka Plan',
+            array($this, 'category_bg_color_callback'),
+            'project_gallery_settings',
+            'project_gallery_hover_section'
+        );
+        
         // Responsive ayarları
         add_settings_section(
             'project_gallery_responsive_section',
@@ -902,11 +964,50 @@ class ProjectGallery {
                     </div>
                 </div>
                 
+                <div class="hover-preview-section">
+                    <h2>🎨 Hover Efekt Önizleme</h2>
+                    <p>Aşağıdaki örnekler üzerine fareyi getirerek hover efektlerini test edin:</p>
+                    <div id="hover-preview" class="gallery-preview">
+                        <div class="preview-item hover-demo">
+                            <div class="preview-image" style="background-image: url('https://picsum.photos/200/120?random=1');">
+                                <div class="preview-overlay">
+                                    <div class="preview-title">Örnek Proje 1</div>
+                                    <div class="preview-categories">
+                                        <span class="preview-category">Mimari</span>
+                                        <span class="preview-category">Modern</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preview-item hover-demo">
+                            <div class="preview-image" style="background-image: url('https://picsum.photos/200/120?random=2');">
+                                <div class="preview-overlay">
+                                    <div class="preview-title">Örnek Proje 2</div>
+                                    <div class="preview-categories">
+                                        <span class="preview-category">İç Tasarım</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preview-item hover-demo">
+                            <div class="preview-image" style="background-image: url('https://picsum.photos/200/120?random=3');">
+                                <div class="preview-overlay">
+                                    <div class="preview-title">Örnek Proje 3</div>
+                                    <div class="preview-categories">
+                                        <span class="preview-category">Villa</span>
+                                        <span class="preview-category">Lüks</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <?php submit_button('Ayarları Kaydet'); ?>
             </form>
             
             <style>
-            .gallery-preview-section {
+            .gallery-preview-section, .hover-preview-section {
                 background: #f1f1f1;
                 padding: 20px;
                 border-radius: 8px;
@@ -924,6 +1025,12 @@ class ProjectGallery {
                 border-radius: 8px;
                 overflow: hidden;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                position: relative;
+                transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            }
+            .preview-item:hover {
+                transform: translateY(-8px) scale(1.02);
+                box-shadow: 0 20px 40px rgba(0, 123, 186, 0.2);
             }
             .preview-image {
                 background: linear-gradient(45deg, #007cba, #00a0d2);
@@ -934,6 +1041,60 @@ class ProjectGallery {
                 height: 120px;
                 font-weight: bold;
                 font-size: 18px;
+                background-size: cover;
+                background-position: center;
+                position: relative;
+            }
+            .hover-demo .preview-image {
+                background: linear-gradient(45deg, #007cba, #00a0d2);
+            }
+            .preview-overlay {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: linear-gradient(transparent, rgba(0, 123, 186, 0.9));
+                color: white;
+                padding: 15px;
+                transform: translateY(100%);
+                transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+                opacity: 0;
+            }
+            .hover-demo:hover .preview-overlay {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            .preview-title {
+                font-size: 14px;
+                font-weight: 600;
+                margin-bottom: 8px;
+                transform: translateY(20px);
+                transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) 0.1s;
+            }
+            .hover-demo:hover .preview-title {
+                transform: translateY(0);
+            }
+            .preview-categories {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+                transform: translateY(20px);
+                transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) 0.2s;
+            }
+            .hover-demo:hover .preview-categories {
+                transform: translateY(0);
+            }
+            .preview-category {
+                background: rgba(255, 255, 255, 0.25);
+                padding: 3px 8px;
+                border-radius: 12px;
+                font-size: 11px;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                transition: all 0.3s ease;
+            }
+            .preview-category:hover {
+                background: rgba(255, 255, 255, 0.4);
+                transform: scale(1.05);
             }
             .form-table th {
                 width: 200px;
@@ -1096,11 +1257,156 @@ class ProjectGallery {
     }
     
     /**
+     * Hover section callback
+     */
+    public function hover_section_callback() {
+        echo '<p>Kısa kod galerisindeki hover efektlerini özelleştirin.</p>';
+    }
+    
+    /**
+     * Hover text color callback
+     */
+    public function hover_text_color_callback() {
+        $options = get_option('project_gallery_options');
+        $value = isset($options['hover_text_color']) ? $options['hover_text_color'] : '#ffffff';
+        ?>
+        <input type="color" name="project_gallery_options[hover_text_color]" 
+               value="<?php echo esc_attr($value); ?>" 
+               class="color-picker"
+               id="hover_text_color">
+        <p class="description">Overlay metinlerinin rengi (proje adı ve kategori etiketleri)</p>
+        <?php
+    }
+    
+    /**
+     * Hover background color callback
+     */
+    public function hover_bg_color_callback() {
+        $options = get_option('project_gallery_options');
+        $value = isset($options['hover_bg_color']) ? $options['hover_bg_color'] : '#007cba';
+        ?>
+        <input type="color" name="project_gallery_options[hover_bg_color]" 
+               value="<?php echo esc_attr($value); ?>" 
+               class="color-picker"
+               id="hover_bg_color">
+        <p class="description">Ana overlay arkaplan rengi</p>
+        <?php
+    }
+    
+    /**
+     * Hover gradient start callback
+     */
+    public function hover_gradient_start_callback() {
+        $options = get_option('project_gallery_options');
+        $value = isset($options['hover_gradient_start']) ? $options['hover_gradient_start'] : '#007cba';
+        ?>
+        <input type="color" name="project_gallery_options[hover_gradient_start]" 
+               value="<?php echo esc_attr($value); ?>" 
+               class="color-picker"
+               id="hover_gradient_start">
+        <p class="description">Gradient geçişinin başlangıç rengi</p>
+        <?php
+    }
+    
+    /**
+     * Hover gradient end callback
+     */
+    public function hover_gradient_end_callback() {
+        $options = get_option('project_gallery_options');
+        $value = isset($options['hover_gradient_end']) ? $options['hover_gradient_end'] : '#0056b3';
+        ?>
+        <input type="color" name="project_gallery_options[hover_gradient_end]" 
+               value="<?php echo esc_attr($value); ?>" 
+               class="color-picker"
+               id="hover_gradient_end">
+        <p class="description">Gradient geçişinin bitiş rengi</p>
+        <?php
+    }
+    
+    /**
+     * Hover intensity callback
+     */
+    public function hover_intensity_callback() {
+        $options = get_option('project_gallery_options');
+        $value = isset($options['hover_intensity']) ? $options['hover_intensity'] : 0.9;
+        ?>
+        <input type="range" name="project_gallery_options[hover_intensity]" 
+               min="0.3" max="1" step="0.1" value="<?php echo esc_attr($value); ?>" 
+               oninput="this.nextElementSibling.value = this.value">
+        <output><?php echo esc_attr($value); ?></output>
+        <p class="description">Overlay efektinin şiddeti (0.3 - 1.0 arası)</p>
+        <?php
+    }
+    
+    /**
+     * Category background color callback
+     */
+    public function category_bg_color_callback() {
+        $options = get_option('project_gallery_options');
+        $value = isset($options['category_bg_color']) ? $options['category_bg_color'] : 'rgba(255, 255, 255, 0.25)';
+        ?>
+        <input type="color" name="project_gallery_options[category_bg_color]" 
+               value="<?php echo esc_attr(str_replace('rgba(', '#', str_replace(', 0.25)', '', $value))); ?>" 
+               class="color-picker"
+               id="category_bg_color">
+        <input type="range" name="project_gallery_options[category_bg_opacity]" 
+               min="0.1" max="1" step="0.1" 
+               value="<?php echo esc_attr(isset($options['category_bg_opacity']) ? $options['category_bg_opacity'] : 0.25); ?>" 
+               oninput="this.nextElementSibling.value = this.value">
+        <output><?php echo esc_attr(isset($options['category_bg_opacity']) ? $options['category_bg_opacity'] : 0.25); ?></output> şeffaflık
+        <p class="description">Kategori etiketlerinin arkaplan rengi ve şeffaflığı</p>
+        <?php
+    }
+    
+    /**
      * Admin için script ve stiller
      */
     public function admin_enqueue_scripts($hook) {
         if ($hook === 'proje_page_project-gallery-settings') {
             wp_enqueue_script('jquery');
+            wp_enqueue_style('wp-color-picker');
+            wp_enqueue_script('wp-color-picker');
+            
+            // Add custom admin script for color picker initialization
+            wp_add_inline_script('wp-color-picker', '
+                jQuery(document).ready(function($) {
+                    $(".color-picker").wpColorPicker({
+                        change: function(event, ui) {
+                            // Trigger live preview update when color changes
+                            updateHoverPreview();
+                        }
+                    });
+                    
+                    function updateHoverPreview() {
+                        var textColor = $("#hover_text_color").val() || "#ffffff";
+                        var bgColor = $("#hover_bg_color").val() || "#007cba";
+                        var gradientStart = $("#hover_gradient_start").val() || "#007cba";
+                        var gradientEnd = $("#hover_gradient_end").val() || "#0056b3";
+                        var categoryBg = $("#category_bg_color").val() || "#ffffff";
+                        
+                        // Create live preview styles
+                        var previewStyles = `
+                            <style id="hover-preview-styles">
+                            .gallery-preview .preview-item:hover .preview-overlay {
+                                background: linear-gradient(transparent, ${gradientStart}dd, ${gradientEnd}dd) !important;
+                                opacity: 1 !important;
+                            }
+                            .gallery-preview .preview-title {
+                                color: ${textColor} !important;
+                            }
+                            .gallery-preview .preview-category {
+                                background: ${categoryBg}44 !important;
+                                color: ${textColor} !important;
+                                border-color: ${categoryBg}88 !important;
+                            }
+                            </style>
+                        `;
+                        
+                        $("#hover-preview-styles").remove();
+                        $("head").append(previewStyles);
+                    }
+                });
+            ');
         }
     }
     
@@ -1108,8 +1414,6 @@ class ProjectGallery {
      * Dinamik galeri stilleri
      */
     public function dynamic_gallery_styles() {
-        if (!is_singular('proje')) return;
-        
         $options = get_option('project_gallery_options');
         $layout_type = isset($options['layout_type']) ? $options['layout_type'] : 'grid';
         $columns = isset($options['columns_count']) ? $options['columns_count'] : 3;
@@ -1119,8 +1423,49 @@ class ProjectGallery {
         $tablet_columns = isset($options['tablet_columns']) ? $options['tablet_columns'] : 2;
         $mobile_columns = isset($options['mobile_columns']) ? $options['mobile_columns'] : 1;
         
+        // Hover customization options
+        $hover_text_color = isset($options['hover_text_color']) ? $options['hover_text_color'] : '#ffffff';
+        $hover_bg_color = isset($options['hover_bg_color']) ? $options['hover_bg_color'] : '#007cba';
+        $hover_gradient_start = isset($options['hover_gradient_start']) ? $options['hover_gradient_start'] : '#007cba';
+        $hover_gradient_end = isset($options['hover_gradient_end']) ? $options['hover_gradient_end'] : '#0056b3';
+        $hover_intensity = isset($options['hover_intensity']) ? $options['hover_intensity'] : 0.9;
+        $category_bg_color = isset($options['category_bg_color']) ? $options['category_bg_color'] : '#ffffff';
+        $category_bg_opacity = isset($options['category_bg_opacity']) ? $options['category_bg_opacity'] : 0.25;
+        
+        // Convert color to RGB for transparency usage
+        $hover_bg_rgb = $this->hex_to_rgb($hover_bg_color);
+        $gradient_start_rgb = $this->hex_to_rgb($hover_gradient_start);
+        $gradient_end_rgb = $this->hex_to_rgb($hover_gradient_end);
+        $category_bg_rgb = $this->hex_to_rgb($category_bg_color);
+        
         ?>
         <style id="project-gallery-dynamic-styles">
+        /* Project Gallery Shortcode Customization */
+        .project-gallery .project-item:hover .project-overlay {
+            background: linear-gradient(transparent, rgba(<?php echo $gradient_start_rgb; ?>, <?php echo $hover_intensity; ?>), rgba(<?php echo $gradient_end_rgb; ?>, <?php echo $hover_intensity; ?>)) !important;
+        }
+        
+        .project-gallery .project-title {
+            color: <?php echo $hover_text_color; ?> !important;
+        }
+        
+        .project-gallery .project-category {
+            background: rgba(<?php echo $category_bg_rgb; ?>, <?php echo $category_bg_opacity; ?>) !important;
+            color: <?php echo $hover_text_color; ?> !important;
+            border: 1px solid rgba(<?php echo $category_bg_rgb; ?>, <?php echo min(1.0, $category_bg_opacity + 0.2); ?>) !important;
+        }
+        
+        .project-gallery .project-item::before {
+            background: linear-gradient(135deg, rgba(<?php echo $gradient_start_rgb; ?>, 0.1) 0%, rgba(<?php echo $gradient_end_rgb; ?>, 0.1) 100%) !important;
+        }
+        
+        .project-gallery .project-item:hover {
+            box-shadow: 0 20px 40px rgba(<?php echo $hover_bg_rgb; ?>, 0.2) !important;
+        }
+        
+        .project-gallery .project-thumbnail::after {
+            background: radial-gradient(circle at center, transparent 0%, rgba(<?php echo $hover_bg_rgb; ?>, 0.1) 100%) !important;
+        }
         .gallery-grid {
             <?php if ($layout_type === 'masonry'): ?>
             display: grid;
@@ -1217,6 +1562,23 @@ class ProjectGallery {
     }
     
     /**
+     * Convert hex color to RGB values for CSS rgba usage
+     */
+    private function hex_to_rgb($hex) {
+        $hex = str_replace('#', '', $hex);
+        
+        if (strlen($hex) == 3) {
+            $hex = str_repeat(substr($hex, 0, 1), 2) . str_repeat(substr($hex, 1, 1), 2) . str_repeat(substr($hex, 2, 1), 2);
+        }
+        
+        return implode(', ', array(
+            hexdec(substr($hex, 0, 2)),
+            hexdec(substr($hex, 2, 2)),
+            hexdec(substr($hex, 4, 2))
+        ));
+    }
+    
+    /**
      * Plugin activation
      */
     public function activate_plugin() {
@@ -1233,6 +1595,13 @@ class ProjectGallery {
             'hover_effect' => 'scale',
             'tablet_columns' => 2,
             'mobile_columns' => 1,
+            'hover_text_color' => '#ffffff',
+            'hover_bg_color' => '#007cba',
+            'hover_gradient_start' => '#007cba',
+            'hover_gradient_end' => '#0056b3',
+            'hover_intensity' => 0.9,
+            'category_bg_color' => '#ffffff',
+            'category_bg_opacity' => 0.25,
             'enable_analytics' => true,
             'enable_social_sharing' => true,
             'enable_video_support' => true,
