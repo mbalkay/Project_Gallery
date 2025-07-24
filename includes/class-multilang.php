@@ -861,6 +861,52 @@ class ProjectGalleryMultiLang {
     }
     
     /**
+     * Çeviri verilerini kaydet (WordPress save_post hook'u için)
+     */
+    public function save_translation_data($post_id) {
+        // Otomatik kaydetme işlemlerini kontrol et
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+            return;
+        }
+        
+        // Post tipini kontrol et
+        if (get_post_type($post_id) !== 'proje') {
+            return;
+        }
+        
+        // Yetki kontrolü
+        if (!current_user_can('edit_post', $post_id)) {
+            return;
+        }
+        
+        // Nonce kontrolü (metabox'tan geliyorsa)
+        if (isset($_POST['project_translation_nonce']) && 
+            !wp_verify_nonce($_POST['project_translation_nonce'], 'project_translation_nonce')) {
+            return;
+        }
+        
+        // Çoklu dil sistemi aktif değilse çık
+        if ($this->plugin_type === 'none') {
+            return;
+        }
+        
+        // Projenin dil bilgisini kaydet
+        if (!get_post_meta($post_id, '_project_language', true)) {
+            update_post_meta($post_id, '_project_language', $this->current_lang);
+        }
+        
+        // Translation group oluştur (eğer yoksa)
+        $translation_group = get_post_meta($post_id, '_project_translation_group', true);
+        if (!$translation_group) {
+            $translation_group = wp_generate_uuid4();
+            update_post_meta($post_id, '_project_translation_group', $translation_group);
+        }
+        
+        // Bu fonksiyon çoklu dil plugin'leri için gerekli meta verileri yönetir
+        // Gerçek çeviri işlemi AJAX ile yapılacak
+    }
+    
+    /**
      * Plugin bilgilerini getir
      */
     public function get_plugin_info() {
