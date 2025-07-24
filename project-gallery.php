@@ -40,6 +40,7 @@ class ProjectGallery {
     private $search;
     private $multilang;
     private $advanced_lightbox;
+    private $animations;
     
     public function __construct() {
         // Load all advanced features
@@ -83,6 +84,7 @@ class ProjectGallery {
         require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-custom-fields.php';
         require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-multilang.php';
         require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-advanced-lightbox.php';
+        require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-animations.php';
     }
     
     /**
@@ -97,6 +99,7 @@ class ProjectGallery {
         $this->search = new ProjectGallerySearch();
         $this->multilang = new ProjectGalleryMultiLang();
         $this->advanced_lightbox = new ProjectGalleryAdvancedLightbox();
+        $this->animations = new ProjectGalleryAnimations();
     }
     
     /**
@@ -1778,6 +1781,10 @@ class ProjectGallery {
     
     public function get_advanced_lightbox() {
         return $this->advanced_lightbox;
+    }
+    
+    public function get_animations() {
+        return $this->animations;
     }
 }
 

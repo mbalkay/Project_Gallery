@@ -1,0 +1,608 @@
+/*
+* Project Gallery Animations CSS
+* Gelişmiş animasyon ve efekt stilleri
+*/
+
+/* CSS Variables for Animations */
+:root {
+    --pgal-animation-duration: 600ms;
+    --pgal-animation-delay: 100ms;
+    --pgal-animation-stagger: 150ms;
+    --pgal-hover-duration: 400ms;
+    --pgal-hover-timing: cubic-bezier(0.25, 0.8, 0.25, 1);
+    --pgal-hover-scale: 1.05;
+    --pgal-hover-rotate: 2deg;
+    --pgal-loading-duration: 1500ms;
+    --pgal-loading-color-start: #f0f0f0;
+    --pgal-loading-color-end: #e0e0e0;
+}
+
+/* Base Animation Classes */
+.pgal-animate-ready {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all var(--pgal-animation-duration) ease-out;
+    will-change: opacity, transform;
+}
+
+.pgal-animate-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Entrance Animations */
+@keyframes pgal-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes pgal-fade-up {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes pgal-fade-down {
+    from { 
+        opacity: 0; 
+        transform: translateY(-30px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes pgal-fade-left {
+    from { 
+        opacity: 0; 
+        transform: translateX(-30px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateX(0); 
+    }
+}
+
+@keyframes pgal-fade-right {
+    from { 
+        opacity: 0; 
+        transform: translateX(30px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateX(0); 
+    }
+}
+
+@keyframes pgal-slide-up {
+    from { 
+        transform: translateY(50px); 
+    }
+    to { 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes pgal-slide-down {
+    from { 
+        transform: translateY(-50px); 
+    }
+    to { 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes pgal-slide-left {
+    from { 
+        transform: translateX(-50px); 
+    }
+    to { 
+        transform: translateX(0); 
+    }
+}
+
+@keyframes pgal-slide-right {
+    from { 
+        transform: translateX(50px); 
+    }
+    to { 
+        transform: translateX(0); 
+    }
+}
+
+@keyframes pgal-slide-up-bounce {
+    0% { 
+        transform: translateY(50px); 
+    }
+    60% { 
+        transform: translateY(-5px); 
+    }
+    80% { 
+        transform: translateY(2px); 
+    }
+    100% { 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes pgal-zoom-in {
+    from { 
+        opacity: 0; 
+        transform: scale(0.8); 
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+}
+
+@keyframes pgal-zoom-out {
+    from { 
+        opacity: 0; 
+        transform: scale(1.2); 
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+}
+
+@keyframes pgal-fade-zoom {
+    from { 
+        opacity: 0; 
+        transform: scale(0.9); 
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+}
+
+@keyframes pgal-flip-left {
+    from { 
+        opacity: 0; 
+        transform: rotateY(-90deg); 
+    }
+    to { 
+        opacity: 1; 
+        transform: rotateY(0); 
+    }
+}
+
+@keyframes pgal-flip-right {
+    from { 
+        opacity: 0; 
+        transform: rotateY(90deg); 
+    }
+    to { 
+        opacity: 1; 
+        transform: rotateY(0); 
+    }
+}
+
+@keyframes pgal-flip-up {
+    from { 
+        opacity: 0; 
+        transform: rotateX(-90deg); 
+    }
+    to { 
+        opacity: 1; 
+        transform: rotateX(0); 
+    }
+}
+
+@keyframes pgal-flip-down {
+    from { 
+        opacity: 0; 
+        transform: rotateX(90deg); 
+    }
+    to { 
+        opacity: 1; 
+        transform: rotateX(0); 
+    }
+}
+
+@keyframes pgal-rotate-in {
+    from { 
+        opacity: 0; 
+        transform: rotate(-180deg) scale(0.8); 
+    }
+    to { 
+        opacity: 1; 
+        transform: rotate(0) scale(1); 
+    }
+}
+
+@keyframes pgal-bounce-in {
+    0% { 
+        opacity: 0; 
+        transform: scale(0.3); 
+    }
+    50% { 
+        opacity: 1; 
+        transform: scale(1.05); 
+    }
+    70% { 
+        transform: scale(0.9); 
+    }
+    100% { 
+        transform: scale(1); 
+    }
+}
+
+@keyframes pgal-elastic-in {
+    0% { 
+        opacity: 0; 
+        transform: scale(0); 
+    }
+    55% { 
+        opacity: 1; 
+        transform: scale(1.1); 
+    }
+    75% { 
+        transform: scale(0.9); 
+    }
+    100% { 
+        transform: scale(1); 
+    }
+}
+
+/* Wave Animation */
+@keyframes pgal-wave {
+    0% { 
+        opacity: 0; 
+        transform: translateY(30px); 
+    }
+    50% { 
+        opacity: 0.5; 
+    }
+    100% { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* Entrance Animation Classes */
+.pgal-entrance-fade .pgal-animate-in {
+    animation: pgal-fade var(--pgal-animation-duration) ease-out forwards;
+}
+
+.pgal-entrance-fade-up .pgal-animate-in {
+    animation: pgal-fade-up var(--pgal-animation-duration) ease-out forwards;
+}
+
+.pgal-entrance-fade-down .pgal-animate-in {
+    animation: pgal-fade-down var(--pgal-animation-duration) ease-out forwards;
+}
+
+.pgal-entrance-fade-left .pgal-animate-in {
+    animation: pgal-fade-left var(--pgal-animation-duration) ease-out forwards;
+}
+
+.pgal-entrance-fade-right .pgal-animate-in {
+    animation: pgal-fade-right var(--pgal-animation-duration) ease-out forwards;
+}
+
+.pgal-entrance-slide-up .pgal-animate-in {
+    animation: pgal-slide-up var(--pgal-animation-duration) ease-out forwards;
+}
+
+.pgal-entrance-slide-down .pgal-animate-in {
+    animation: pgal-slide-down var(--pgal-animation-duration) ease-out forwards;
+}
+
+.pgal-entrance-slide-left .pgal-animate-in {
+    animation: pgal-slide-left var(--pgal-animation-duration) ease-out forwards;
+}
+
+.pgal-entrance-slide-right .pgal-animate-in {
+    animation: pgal-slide-right var(--pgal-animation-duration) ease-out forwards;
+}
+
+.pgal-entrance-slide-up-bounce .pgal-animate-in {
+    animation: pgal-slide-up-bounce var(--pgal-animation-duration) ease-out forwards;
+}
+
+.pgal-entrance-zoom-in .pgal-animate-in {
+    animation: pgal-zoom-in var(--pgal-animation-duration) ease-out forwards;
+}
+
+.pgal-entrance-zoom-out .pgal-animate-in {
+    animation: pgal-zoom-out var(--pgal-animation-duration) ease-out forwards;
+}
+
+.pgal-entrance-fade-zoom .pgal-animate-in {
+    animation: pgal-fade-zoom var(--pgal-animation-duration) ease-out forwards;
+}
+
+.pgal-entrance-flip-left .pgal-animate-in {
+    animation: pgal-flip-left var(--pgal-animation-duration) ease-out forwards;
+    transform-origin: center center;
+    perspective: 1000px;
+}
+
+.pgal-entrance-flip-right .pgal-animate-in {
+    animation: pgal-flip-right var(--pgal-animation-duration) ease-out forwards;
+    transform-origin: center center;
+    perspective: 1000px;
+}
+
+.pgal-entrance-flip-up .pgal-animate-in {
+    animation: pgal-flip-up var(--pgal-animation-duration) ease-out forwards;
+    transform-origin: center center;
+    perspective: 1000px;
+}
+
+.pgal-entrance-flip-down .pgal-animate-in {
+    animation: pgal-flip-down var(--pgal-animation-duration) ease-out forwards;
+    transform-origin: center center;
+    perspective: 1000px;
+}
+
+.pgal-entrance-rotate-in .pgal-animate-in {
+    animation: pgal-rotate-in var(--pgal-animation-duration) ease-out forwards;
+}
+
+.pgal-entrance-bounce-in .pgal-animate-in {
+    animation: pgal-bounce-in var(--pgal-animation-duration) ease-out forwards;
+}
+
+.pgal-entrance-elastic-in .pgal-animate-in {
+    animation: pgal-elastic-in var(--pgal-animation-duration) ease-out forwards;
+}
+
+.pgal-entrance-wave .pgal-animate-in {
+    animation: pgal-wave var(--pgal-animation-duration) ease-out forwards;
+}
+
+/* Stagger delays */
+.pgal-animate-delay-0 { animation-delay: calc(var(--pgal-animation-delay) + 0 * var(--pgal-animation-stagger)); }
+.pgal-animate-delay-1 { animation-delay: calc(var(--pgal-animation-delay) + 1 * var(--pgal-animation-stagger)); }
+.pgal-animate-delay-2 { animation-delay: calc(var(--pgal-animation-delay) + 2 * var(--pgal-animation-stagger)); }
+.pgal-animate-delay-3 { animation-delay: calc(var(--pgal-animation-delay) + 3 * var(--pgal-animation-stagger)); }
+.pgal-animate-delay-4 { animation-delay: calc(var(--pgal-animation-delay) + 4 * var(--pgal-animation-stagger)); }
+.pgal-animate-delay-5 { animation-delay: calc(var(--pgal-animation-delay) + 5 * var(--pgal-animation-stagger)); }
+.pgal-animate-delay-6 { animation-delay: calc(var(--pgal-animation-delay) + 6 * var(--pgal-animation-stagger)); }
+.pgal-animate-delay-7 { animation-delay: calc(var(--pgal-animation-delay) + 7 * var(--pgal-animation-stagger)); }
+.pgal-animate-delay-8 { animation-delay: calc(var(--pgal-animation-delay) + 8 * var(--pgal-animation-stagger)); }
+.pgal-animate-delay-9 { animation-delay: calc(var(--pgal-animation-delay) + 9 * var(--pgal-animation-stagger)); }
+
+/* Hover Effects */
+.project-item {
+    transition: all var(--pgal-hover-duration) var(--pgal-hover-timing);
+    transform-origin: center center;
+}
+
+/* Hover Animation Classes */
+.pgal-hover-scale .project-item:hover {
+    transform: scale(var(--pgal-hover-scale));
+}
+
+.pgal-hover-scale-rotate .project-item:hover {
+    transform: scale(var(--pgal-hover-scale)) rotate(var(--pgal-hover-rotate));
+}
+
+.pgal-hover-lift .project-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.pgal-hover-lift-rotate .project-item:hover {
+    transform: translateY(-8px) rotate(var(--pgal-hover-rotate));
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.pgal-hover-blur .project-item:hover img {
+    filter: blur(var(--pgal-hover-blur));
+}
+
+.pgal-hover-brightness .project-item:hover img {
+    filter: brightness(var(--pgal-hover-brightness));
+}
+
+.pgal-hover-saturate .project-item:hover img {
+    filter: saturate(var(--pgal-hover-saturate));
+}
+
+.pgal-hover-soft-scale .project-item:hover {
+    transform: scale(1.02);
+    filter: brightness(1.05);
+}
+
+.pgal-hover-glow .project-item:hover {
+    box-shadow: 0 0 20px rgba(0, 123, 186, 0.4);
+    transform: scale(1.02);
+}
+
+.pgal-hover-tilt .project-item:hover {
+    transform: rotate(1deg) scale(1.02);
+}
+
+.pgal-hover-float .project-item:hover {
+    transform: translateY(-10px);
+    animation: pgal-float 2s ease-in-out infinite;
+}
+
+@keyframes pgal-float {
+    0%, 100% { transform: translateY(-10px); }
+    50% { transform: translateY(-15px); }
+}
+
+.pgal-hover-pulse .project-item:hover {
+    animation: pgal-pulse 1s ease-in-out infinite;
+}
+
+@keyframes pgal-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.pgal-hover-swing .project-item:hover {
+    animation: pgal-swing 1s ease-in-out;
+}
+
+@keyframes pgal-swing {
+    20% { transform: rotate(3deg); }
+    40% { transform: rotate(-3deg); }
+    60% { transform: rotate(2deg); }
+    80% { transform: rotate(-2deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.pgal-hover-wobble .project-item:hover {
+    animation: pgal-wobble 1s ease-in-out;
+}
+
+@keyframes pgal-wobble {
+    0% { transform: translateX(0); }
+    15% { transform: translateX(-5px) rotate(-1deg); }
+    30% { transform: translateX(4px) rotate(1deg); }
+    45% { transform: translateX(-3px) rotate(-1deg); }
+    60% { transform: translateX(2px) rotate(1deg); }
+    75% { transform: translateX(-1px) rotate(-1deg); }
+    100% { transform: translateX(0); }
+}
+
+/* Loading Animations */
+.pgal-loading-active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    border-radius: inherit;
+}
+
+/* Skeleton Loading */
+@keyframes pgal-skeleton {
+    0% { background-position: -200px 0; }
+    100% { background-position: calc(200px + 100%) 0; }
+}
+
+.pgal-loading-skeleton::before {
+    background: linear-gradient(90deg, 
+        var(--pgal-loading-color-start) 0%, 
+        var(--pgal-loading-color-end) 50%, 
+        var(--pgal-loading-color-start) 100%);
+    background-size: 200px 100%;
+    animation: pgal-skeleton var(--pgal-loading-duration) ease-in-out infinite;
+}
+
+/* Pulse Loading */
+@keyframes pgal-pulse-loading {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.pgal-loading-pulse::before {
+    background: var(--pgal-loading-color-start);
+    animation: pgal-pulse-loading var(--pgal-loading-duration) ease-in-out infinite;
+}
+
+/* Shimmer Loading */
+@keyframes pgal-shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.pgal-loading-shimmer::before {
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--pgal-loading-color-end) 50%, 
+        transparent 100%);
+    animation: pgal-shimmer var(--pgal-loading-duration) ease-in-out infinite;
+}
+
+/* Wave Loading */
+@keyframes pgal-wave-loading {
+    0%, 100% { 
+        background: var(--pgal-loading-color-start);
+        transform: scaleY(1);
+    }
+    50% { 
+        background: var(--pgal-loading-color-end);
+        transform: scaleY(0.8);
+    }
+}
+
+.pgal-loading-wave::before {
+    animation: pgal-wave-loading var(--pgal-loading-duration) ease-in-out infinite;
+}
+
+/* Parallax Effects */
+.pgal-parallax .project-item {
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+}
+
+/* Performance Mode */
+.pgal-performance-mode * {
+    animation-duration: 0.2s !important;
+    transition-duration: 0.2s !important;
+}
+
+.pgal-performance-mode .pgal-parallax .project-item {
+    will-change: auto;
+    transform: none !important;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .pgal-animate-ready,
+    .project-item {
+        animation: none !important;
+        transition: none !important;
+    }
+    
+    .pgal-animate-ready {
+        opacity: 1;
+        transform: none;
+    }
+    
+    .pgal-parallax .project-item {
+        transform: none !important;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .pgal-loading-active::before {
+        background: currentColor !important;
+        opacity: 0.5;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --pgal-loading-color-start: #2a2a2a;
+        --pgal-loading-color-end: #1a1a1a;
+    }
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    :root {
+        --pgal-animation-duration: 400ms;
+        --pgal-hover-duration: 200ms;
+        --pgal-animation-stagger: 100ms;
+    }
+    
+    .pgal-hover-lift .project-item:hover,
+    .pgal-hover-lift-rotate .project-item:hover {
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .pgal-parallax .project-item {
+        transform: none !important;
+    }
+}
