@@ -38,6 +38,7 @@ class ProjectGallery {
     private $performance;
     private $social;
     private $search;
+    private $multilang;
     
     public function __construct() {
         // Load all advanced features
@@ -79,6 +80,7 @@ class ProjectGallery {
         require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-social.php';
         require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-search.php';
         require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-custom-fields.php';
+        require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-multilang.php';
     }
     
     /**
@@ -91,6 +93,7 @@ class ProjectGallery {
         $this->performance = new ProjectGalleryPerformance();
         $this->social = new ProjectGallerySocial();
         $this->search = new ProjectGallerySearch();
+        $this->multilang = new ProjectGalleryMultiLang();
     }
     
     /**
@@ -1764,6 +1767,10 @@ class ProjectGallery {
     
     public function get_search() {
         return $this->search;
+    }
+    
+    public function get_multilang() {
+        return $this->multilang;
     }
 }
 
