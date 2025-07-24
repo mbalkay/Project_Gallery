@@ -828,8 +828,19 @@ class ProjectGallerySearch {
         global $wpdb;
         
         $post = get_post($post_id);
+        
+        // Get categories and handle potential WP_Error
         $categories = wp_get_post_terms($post_id, 'proje-kategori', array('fields' => 'names'));
+        if (is_wp_error($categories)) {
+            $categories = array();
+        }
+        
+        // Get tags and handle potential WP_Error
         $tags = wp_get_post_terms($post_id, 'post_tag', array('fields' => 'names'));
+        if (is_wp_error($tags)) {
+            $tags = array();
+        }
+        
         $meta_keywords = get_post_meta($post_id, '_project_keywords', true);
         
         $search_vector = $this->generate_search_vector($post, $categories, $tags, $meta_keywords);
@@ -843,8 +854,8 @@ class ProjectGallerySearch {
                 'title' => $post->post_title,
                 'content' => strip_tags($post->post_content),
                 'excerpt' => $post->post_excerpt,
-                'categories' => implode(' ', $categories),
-                'tags' => implode(' ', $tags),
+                'categories' => implode(' ', is_array($categories) ? $categories : array()),
+                'tags' => implode(' ', is_array($tags) ? $tags : array()),
                 'meta_keywords' => $meta_keywords,
                 'search_vector' => $search_vector
             ),
@@ -856,6 +867,10 @@ class ProjectGallerySearch {
      * Generate search vector
      */
     private function generate_search_vector($post, $categories, $tags, $meta_keywords) {
+        // Ensure arrays are valid before implode
+        $categories = is_array($categories) ? $categories : array();
+        $tags = is_array($tags) ? $tags : array();
+        
         $content = array(
             $post->post_title,
             strip_tags($post->post_content),

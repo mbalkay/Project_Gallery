@@ -228,7 +228,7 @@ class ProjectGallery {
             array($this, 'project_gallery_meta_box'),
             'proje',
             'normal',
-            'high'
+            'default'
         );
     }
     

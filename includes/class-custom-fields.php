@@ -513,7 +513,7 @@ class ProjectGalleryCustomFields {
                 '🏷️ Proje Bilgileri',
                 array($this, 'custom_fields_meta_box'),
                 'proje',
-                'side',
+                'normal',
                 'high'
             );
         }
