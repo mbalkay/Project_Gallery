@@ -1466,6 +1466,19 @@ class ProjectGallery {
         .project-gallery .project-thumbnail::after {
             background: radial-gradient(circle at center, transparent 0%, rgba(<?php echo $hover_bg_rgb; ?>, 0.1) 100%) !important;
         }
+        
+        /* Additional hover customization for project gallery shortcode */
+        .project-gallery .project-item:hover .project-thumbnail img {
+            filter: brightness(1.1) contrast(1.05) saturate(1.1) !important;
+        }
+        
+        .project-gallery .project-category:hover {
+            background: rgba(<?php echo $category_bg_rgb; ?>, <?php echo min(1.0, $category_bg_opacity + 0.15); ?>) !important;
+            transform: scale(1.05) !important;
+        }
+        
+        /* Single Project Gallery Styles (if on single project page) */
+        <?php if (is_singular('proje')): ?>
         .gallery-grid {
             <?php if ($layout_type === 'masonry'): ?>
             display: grid;
@@ -1557,6 +1570,7 @@ class ProjectGallery {
             }
             <?php endif; ?>
         }
+        <?php endif; ?>
         </style>
         <?php
     }
