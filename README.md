@@ -49,6 +49,17 @@ Transform your WordPress website into a professional project showcase with advan
 - **Search Analytics**: Track popular search terms and results
 - **Faceted Search**: Multiple filter combinations with live results
 
+### 🏷️ **Custom Fields System**
+- **Dynamic Field Management**: Create unlimited custom fields for projects
+- **6 Field Types**: Text, Number, Date, URL, Email, and Textarea support
+- **Predefined Templates**: Quick-add common fields (Year, City, Client, Budget, etc.)
+- **Drag-and-Drop Sorting**: Intuitive field reordering interface
+- **Live Preview**: See field appearance before saving changes
+- **Auto-Generated Keys**: Automatic field key generation with Turkish character support
+- **Frontend Integration**: Custom fields display alongside project categories
+- **Type-Specific Inputs**: Smart input types based on field configuration
+- **Responsive Display**: Optimized custom field layouts for all devices
+
 ### 📥 **Import/Export System**
 - **Bulk Import**: CSV and JSON import with validation
 - **Complete Export**: Full data export including images and metadata
@@ -161,6 +172,22 @@ add_action('project_gallery_image_viewed', 'track_custom_analytics');
 }
 ```
 
+### **Custom Fields Usage**
+
+```php
+// Configure custom fields in admin panel
+Navigate to: Projeler > Özel Alanlar
+
+// Add custom fields to projects
+1. Click "➕ Yeni Alan Ekle" or use predefined templates
+2. Configure field name, key, and type
+3. Save configuration
+4. Edit projects to add field values
+
+// Display custom fields in templates (automatic)
+// Fields appear alongside categories in single project view
+```
+
 ## 🎛️ Admin Panel Features
 
 ### **Dashboard Overview**
@@ -173,6 +200,13 @@ add_action('project_gallery_image_viewed', 'track_custom_analytics');
 - Performance optimization controls
 - Social media integration settings
 - Import/export management
+
+### **Custom Fields Management**
+- Dynamic field creation and editing
+- Field type configuration (text, number, date, URL, email, textarea)
+- Predefined field templates for common use cases
+- Live preview of field appearance
+- Drag-and-drop field reordering
 
 ### **Analytics Dashboard**
 - Real-time visitor statistics

@@ -16,6 +16,8 @@
 === Modern Villa Projesi ===
 [Mimari] [Lüks] [Modern]
 
+[Proje Yılı: 2024] [Şehir: İstanbul] [Müşteri: ABC İnşaat]
+
 Villa açıklaması burada yer alacak...
 
 📸 PROJE GALERİSİ:
@@ -23,6 +25,32 @@ Villa açıklaması burada yer alacak...
 [Img4] [Img5] [Img6]
 
 ← Önceki Proje | Tüm Projeler | Sonraki Proje →
+```
+
+## 🏷️ Custom Fields System
+```
+Admin Panel: Projeler > Özel Alanlar
+
+┌─ Özel Alan Yönetimi ─────────────────────────────┐
+│ ➕ Yeni Alan Ekle                                  │
+│                                                  │
+│ Alan Adı: [Proje Yılı    ] Anahtar: [proje_yili]│
+│ Tip: [Sayı ▼] 🗑️                                  │
+│                                                  │
+│ Alan Adı: [Proje Şehir  ] Anahtar: [proje_sehir]│
+│ Tip: [Metin ▼] 🗑️                                │
+│                                                  │
+│ 📅 Proje Yılı 🏙️ Şehir 👤 Müşteri 💰 Bütçe      │
+│                                                  │
+│ 💾 Değişiklikleri Kaydet                         │
+└──────────────────────────────────────────────────┘
+
+Proje Editörü:
+┌─ Proje Bilgileri ─┐
+│ Proje Yılı: [2024]│
+│ Şehir: [İstanbul] │
+│ Müşteri: [ABC Ltd]│
+└───────────────────┘
 ```
 
 ## 🔍 Lightbox View
