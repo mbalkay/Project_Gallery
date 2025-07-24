@@ -36,32 +36,25 @@ get_header(); ?>
                             <?php endif; ?>
                             
                             <?php 
-                            // Display custom fields
+                            // Display custom fields in horizontal format with pipe separators
                             if (class_exists('ProjectGalleryCustomFields')) {
                                 $custom_fields = ProjectGalleryCustomFields::get_project_custom_fields(get_the_ID());
                                 if (!empty($custom_fields)): 
+                                    $field_items = array();
+                                    foreach ($custom_fields as $field) {
+                                        $field_value = '';
+                                        if ($field['type'] === 'url') {
+                                            $field_value = '<a href="' . esc_url($field['value']) . '" target="_blank" rel="noopener">' . esc_html($field['value']) . '</a>';
+                                        } elseif ($field['type'] === 'email') {
+                                            $field_value = '<a href="mailto:' . esc_attr($field['value']) . '">' . esc_html($field['value']) . '</a>';
+                                        } else {
+                                            $field_value = esc_html($field['value']);
+                                        }
+                                        $field_items[] = '<span class="field-label">' . esc_html($field['label']) . ' :</span> <span class="field-value">' . $field_value . '</span>';
+                                    }
                             ?>
-                                <div class="single-project-custom-fields">
-                                    <?php foreach ($custom_fields as $field): ?>
-                                        <div class="custom-field-display">
-                                            <span class="field-label"><?php echo esc_html($field['label']); ?>:</span>
-                                            <span class="field-value">
-                                                <?php 
-                                                if ($field['type'] === 'url'): 
-                                                ?>
-                                                    <a href="<?php echo esc_url($field['value']); ?>" target="_blank" rel="noopener">
-                                                        <?php echo esc_html($field['value']); ?>
-                                                    </a>
-                                                <?php elseif ($field['type'] === 'email'): ?>
-                                                    <a href="mailto:<?php echo esc_attr($field['value']); ?>">
-                                                        <?php echo esc_html($field['value']); ?>
-                                                    </a>
-                                                <?php else: ?>
-                                                    <?php echo esc_html($field['value']); ?>
-                                                <?php endif; ?>
-                                            </span>
-                                        </div>
-                                    <?php endforeach; ?>
+                                <div class="single-project-custom-fields-horizontal">
+                                    <?php echo implode(' <span class="field-separator">|</span> ', $field_items); ?>
                                 </div>
                             <?php 
                                 endif;
