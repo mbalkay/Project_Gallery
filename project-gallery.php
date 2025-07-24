@@ -1790,21 +1790,3 @@ class ProjectGallery {
 
 // Plugin'i başlat
 $project_gallery_instance = new ProjectGallery();
-
-/**
- * Plugin aktivasyonu
- */
-register_activation_hook(__FILE__, 'project_gallery_activation');
-function project_gallery_activation() {
-    global $project_gallery_instance;
-    $project_gallery_instance->activate_plugin();
-}
-
-/**
- * Plugin deaktivasyonu
- */
-register_deactivation_hook(__FILE__, 'project_gallery_deactivation');
-function project_gallery_deactivation() {
-    global $project_gallery_instance;
-    $project_gallery_instance->deactivate_plugin();
-}
