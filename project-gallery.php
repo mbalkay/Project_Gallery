@@ -78,6 +78,7 @@ class ProjectGallery {
         require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-performance.php';
         require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-social.php';
         require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-search.php';
+        require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-custom-fields.php';
     }
     
     /**

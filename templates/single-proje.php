@@ -21,18 +21,53 @@ get_header(); ?>
                         <h1 class="single-project-title"><?php the_title(); ?></h1>
                         <hr class="project-title-divider">
                         
-                        <?php 
-                        $categories = get_the_terms(get_the_ID(), 'proje_kategorisi');
-                        if ($categories && !is_wp_error($categories)): 
-                        ?>
-                            <div class="single-project-categories">
-                                <?php foreach ($categories as $category): ?>
-                                    <a href="<?php echo get_term_link($category); ?>" class="single-project-category">
-                                        <?php echo esc_html($category->name); ?>
-                                    </a>
-                                <?php endforeach; ?>
-                            </div>
-                        <?php endif; ?>
+                        <div class="single-project-meta">
+                            <?php 
+                            $categories = get_the_terms(get_the_ID(), 'proje_kategorisi');
+                            if ($categories && !is_wp_error($categories)): 
+                            ?>
+                                <div class="single-project-categories">
+                                    <?php foreach ($categories as $category): ?>
+                                        <a href="<?php echo get_term_link($category); ?>" class="single-project-category">
+                                            <?php echo esc_html($category->name); ?>
+                                        </a>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <?php 
+                            // Display custom fields
+                            if (class_exists('ProjectGalleryCustomFields')) {
+                                $custom_fields = ProjectGalleryCustomFields::get_project_custom_fields(get_the_ID());
+                                if (!empty($custom_fields)): 
+                            ?>
+                                <div class="single-project-custom-fields">
+                                    <?php foreach ($custom_fields as $field): ?>
+                                        <div class="custom-field-display">
+                                            <span class="field-label"><?php echo esc_html($field['label']); ?>:</span>
+                                            <span class="field-value">
+                                                <?php 
+                                                if ($field['type'] === 'url'): 
+                                                ?>
+                                                    <a href="<?php echo esc_url($field['value']); ?>" target="_blank" rel="noopener">
+                                                        <?php echo esc_html($field['value']); ?>
+                                                    </a>
+                                                <?php elseif ($field['type'] === 'email'): ?>
+                                                    <a href="mailto:<?php echo esc_attr($field['value']); ?>">
+                                                        <?php echo esc_html($field['value']); ?>
+                                                    </a>
+                                                <?php else: ?>
+                                                    <?php echo esc_html($field['value']); ?>
+                                                <?php endif; ?>
+                                            </span>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php 
+                                endif;
+                            }
+                            ?>
+                        </div>
                     </header>
                     
                     <!-- Featured Image -->
