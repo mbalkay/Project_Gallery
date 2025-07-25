@@ -1,0 +1,885 @@
+/*
+* Project Gallery Advanced Lightbox CSS
+* Gelişmiş lightbox stilleri ve animasyonları
+*/
+
+/* CSS Custom Properties */
+:root {
+    --pgal-bg-color: #000000;
+    --pgal-bg-opacity: 0.9;
+    --pgal-border-radius: 8px;
+    --pgal-animation-duration: 300ms;
+    --pgal-primary-color: #007cba;
+    --pgal-secondary-color: #00a0d2;
+    --pgal-text-color: #ffffff;
+    --pgal-toolbar-bg: rgba(0, 0, 0, 0.8);
+    --pgal-panel-bg: rgba(255, 255, 255, 0.95);
+    --pgal-panel-text: #333333;
+    --pgal-button-hover: rgba(255, 255, 255, 0.2);
+    --pgal-shadow-light: rgba(0, 0, 0, 0.1);
+    --pgal-shadow-medium: rgba(0, 0, 0, 0.3);
+    --pgal-shadow-heavy: rgba(0, 0, 0, 0.5);
+}
+
+/* Body class when lightbox is open */
+body.pgal-lightbox-open {
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* Ana lightbox container */
+.pgal-lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--pgal-text-color);
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* Lightbox overlay */
+.pgal-lightbox-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--pgal-bg-color);
+    opacity: var(--pgal-bg-opacity);
+    cursor: pointer;
+}
+
+/* Lightbox ana container */
+.pgal-lightbox-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    max-width: 100vw;
+    max-height: 100vh;
+    pointer-events: none;
+}
+
+/* Toolbar stilleri */
+.pgal-lightbox-toolbar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background: var(--pgal-toolbar-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    pointer-events: auto;
+    transition: all var(--pgal-animation-duration) ease;
+}
+
+.pgal-toolbar-top {
+    top: 0;
+    border-radius: 0 0 var(--pgal-border-radius) var(--pgal-border-radius);
+}
+
+.pgal-toolbar-bottom {
+    bottom: 0;
+    border-radius: var(--pgal-border-radius) var(--pgal-border-radius) 0 0;
+}
+
+.pgal-toolbar-left,
+.pgal-toolbar-center,
+.pgal-toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pgal-toolbar-center {
+    flex: 1;
+    justify-content: center;
+}
+
+/* Resim sayacı */
+.pgal-image-counter {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.pgal-separator {
+    opacity: 0.7;
+}
+
+/* Resim başlığı */
+.pgal-image-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-left: 20px;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Buton stilleri */
+.pgal-btn {
+    background: none;
+    border: none;
+    color: var(--pgal-text-color);
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: var(--pgal-border-radius);
+    font-size: 16px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    min-height: 40px;
+    transition: all 0.2s ease;
+    position: relative;
+    outline: none;
+}
+
+.pgal-btn:hover {
+    background: var(--pgal-button-hover);
+    transform: scale(1.05);
+}
+
+.pgal-btn:active {
+    transform: scale(0.95);
+}
+
+.pgal-btn.pgal-disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Navigasyon butonları */
+.pgal-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    pointer-events: auto;
+}
+
+.pgal-nav-prev {
+    left: 20px;
+}
+
+.pgal-nav-next {
+    right: 20px;
+}
+
+.pgal-btn-nav {
+    width: 60px;
+    height: 60px;
+    background: var(--pgal-toolbar-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 50%;
+    font-size: 24px;
+    font-weight: bold;
+    box-shadow: 0 4px 20px var(--pgal-shadow-medium);
+}
+
+.pgal-btn-nav:hover {
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 6px 25px var(--pgal-shadow-heavy);
+}
+
+/* Ana resim alanı */
+.pgal-lightbox-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    pointer-events: auto;
+}
+
+.pgal-image-container {
+    position: relative;
+    max-width: 100%;
+    max-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pgal-image-wrapper {
+    position: relative;
+    max-width: 100%;
+    max-height: 100%;
+    overflow: hidden;
+    border-radius: var(--pgal-border-radius);
+    box-shadow: 0 10px 40px var(--pgal-shadow-heavy);
+    background: #000;
+}
+
+.pgal-main-image {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform var(--pgal-animation-duration) ease;
+    transform-origin: center center;
+}
+
+/* Loading spinner */
+.pgal-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 15;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    background: var(--pgal-toolbar-bg);
+    padding: 30px;
+    border-radius: var(--pgal-border-radius);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.pgal-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top: 3px solid var(--pgal-primary-color);
+    border-radius: 50%;
+    animation: pgal-spin 1s linear infinite;
+}
+
+@keyframes pgal-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.pgal-loading-text {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Zoom indicator */
+.pgal-zoom-indicator {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--pgal-toolbar-bg);
+    padding: 8px 12px;
+    border-radius: var(--pgal-border-radius);
+    font-size: 14px;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.pgal-image-container:hover .pgal-zoom-indicator {
+    opacity: 1;
+}
+
+/* Kontrol grupları */
+.pgal-zoom-controls,
+.pgal-rotate-controls,
+.pgal-playback-controls,
+.pgal-social-controls,
+.pgal-other-controls {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--pgal-border-radius);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+/* Küçük resimler */
+.pgal-thumbnails-container {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 80%;
+    pointer-events: auto;
+    z-index: 5;
+}
+
+.pgal-thumbnails-wrapper {
+    background: var(--pgal-toolbar-bg);
+    padding: 15px;
+    border-radius: var(--pgal-border-radius);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px var(--pgal-shadow-medium);
+}
+
+.pgal-thumbnails-list {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--pgal-primary-color) transparent;
+}
+
+.pgal-thumbnails-list::-webkit-scrollbar {
+    height: 6px;
+}
+
+.pgal-thumbnails-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.pgal-thumbnails-list::-webkit-scrollbar-thumb {
+    background: var(--pgal-primary-color);
+    border-radius: 3px;
+}
+
+.pgal-thumbnail-item {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    border-radius: var(--pgal-border-radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.pgal-thumbnail-item:hover {
+    transform: scale(1.1);
+    border-color: var(--pgal-secondary-color);
+}
+
+.pgal-thumbnail-item.pgal-active {
+    border-color: var(--pgal-primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 123, 186, 0.3);
+}
+
+.pgal-thumbnail-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Paneller */
+.pgal-info-panel,
+.pgal-share-panel,
+.pgal-help-panel {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    width: 320px;
+    max-height: calc(100vh - 160px);
+    background: var(--pgal-panel-bg);
+    color: var(--pgal-panel-text);
+    border-radius: var(--pgal-border-radius);
+    box-shadow: 0 10px 40px var(--pgal-shadow-heavy);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    pointer-events: auto;
+    z-index: 20;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Panel başlıkları */
+.pgal-info-header,
+.pgal-share-header,
+.pgal-help-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background: rgba(0, 123, 186, 0.1);
+}
+
+.pgal-info-header h3,
+.pgal-share-header h3,
+.pgal-help-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--pgal-primary-color);
+}
+
+.pgal-btn-close-info,
+.pgal-btn-close-share,
+.pgal-btn-close-help {
+    color: var(--pgal-panel-text);
+    font-size: 20px;
+    padding: 5px;
+    min-width: 30px;
+    min-height: 30px;
+}
+
+/* Panel içerikleri */
+.pgal-info-content,
+.pgal-share-content,
+.pgal-help-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--pgal-primary-color) transparent;
+}
+
+.pgal-info-content::-webkit-scrollbar,
+.pgal-share-content::-webkit-scrollbar,
+.pgal-help-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.pgal-info-content::-webkit-scrollbar-track,
+.pgal-share-content::-webkit-scrollbar-track,
+.pgal-help-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+}
+
+.pgal-info-content::-webkit-scrollbar-thumb,
+.pgal-share-content::-webkit-scrollbar-thumb,
+.pgal-help-content::-webkit-scrollbar-thumb {
+    background: var(--pgal-primary-color);
+    border-radius: 3px;
+}
+
+/* Bilgi panel bölümleri */
+.pgal-info-section {
+    margin-bottom: 25px;
+}
+
+.pgal-info-section:last-child {
+    margin-bottom: 0;
+}
+
+.pgal-info-section h4 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--pgal-primary-color);
+    border-bottom: 1px solid rgba(0, 123, 186, 0.2);
+    padding-bottom: 8px;
+}
+
+.pgal-info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+.pgal-info-item label {
+    font-weight: 600;
+    margin-right: 15px;
+    min-width: 120px;
+    color: var(--pgal-primary-color);
+}
+
+.pgal-info-item span {
+    flex: 1;
+    text-align: right;
+    word-break: break-word;
+}
+
+/* Paylaşım paneli */
+.pgal-share-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.pgal-share-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    border: none;
+    border-radius: var(--pgal-border-radius);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: white;
+}
+
+.pgal-share-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.pgal-share-facebook {
+    background: #1877F2;
+}
+
+.pgal-share-twitter {
+    background: #1DA1F2;
+}
+
+.pgal-share-pinterest {
+    background: #E60023;
+}
+
+.pgal-share-whatsapp {
+    background: #25D366;
+}
+
+.pgal-share-icon {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* URL paylaşımı */
+.pgal-share-url {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.pgal-share-url label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--pgal-primary-color);
+}
+
+.pgal-share-url-container {
+    display: flex;
+    gap: 10px;
+}
+
+.pgal-share-url-input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: var(--pgal-border-radius);
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.pgal-btn-copy {
+    background: var(--pgal-primary-color);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: var(--pgal-border-radius);
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.pgal-btn-copy:hover {
+    background: var(--pgal-secondary-color);
+}
+
+/* Yardım paneli */
+.pgal-help-section {
+    margin-bottom: 25px;
+}
+
+.pgal-help-section h4 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--pgal-primary-color);
+    border-bottom: 1px solid rgba(0, 123, 186, 0.2);
+    padding-bottom: 8px;
+}
+
+.pgal-help-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 15px;
+}
+
+.pgal-help-item kbd {
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--pgal-primary-color);
+    color: white;
+    border-radius: 4px;
+    min-width: 24px;
+    text-align: center;
+}
+
+.pgal-help-item span {
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* Karşılaştırma modu */
+.pgal-comparison-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+}
+
+.pgal-comparison-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    clip-path: inset(0 50% 0 0);
+    transition: clip-path 0.3s ease;
+}
+
+.pgal-comparison-slider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 4px;
+    background: var(--pgal-primary-color);
+    cursor: ew-resize;
+    transform: translateX(-50%);
+    z-index: 5;
+}
+
+.pgal-comparison-handle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background: var(--pgal-primary-color);
+    border: 2px solid white;
+    border-radius: 50%;
+    cursor: ew-resize;
+}
+
+/* Hata durumu */
+.pgal-error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    font-size: 18px;
+    color: #dc3232;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Bildirimler */
+.pgal-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000000;
+    padding: 15px 20px;
+    border-radius: var(--pgal-border-radius);
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 20px var(--pgal-shadow-medium);
+    max-width: 300px;
+    word-wrap: break-word;
+}
+
+.pgal-notification.pgal-show {
+    transform: translateX(0);
+}
+
+.pgal-notification-success {
+    background: #46b450;
+}
+
+.pgal-notification-error {
+    background: #dc3232;
+}
+
+.pgal-notification-info {
+    background: var(--pgal-primary-color);
+}
+
+/* Responsive tasarım */
+@media (max-width: 768px) {
+    .pgal-lightbox-toolbar {
+        padding: 10px 15px;
+    }
+    
+    .pgal-toolbar-left,
+    .pgal-toolbar-center,
+    .pgal-toolbar-right {
+        gap: 5px;
+    }
+    
+    .pgal-image-title {
+        display: none;
+    }
+    
+    .pgal-btn {
+        min-width: 36px;
+        min-height: 36px;
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+    
+    .pgal-btn-nav {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    .pgal-nav-prev {
+        left: 10px;
+    }
+    
+    .pgal-nav-next {
+        right: 10px;
+    }
+    
+    .pgal-lightbox-content {
+        padding: 60px 10px;
+    }
+    
+    .pgal-info-panel,
+    .pgal-share-panel,
+    .pgal-help-panel {
+        width: calc(100vw - 20px);
+        max-width: none;
+        right: 10px;
+        left: 10px;
+        top: 60px;
+        max-height: calc(100vh - 120px);
+    }
+    
+    .pgal-thumbnails-container {
+        max-width: 95%;
+        bottom: 60px;
+    }
+    
+    .pgal-thumbnails-wrapper {
+        padding: 10px;
+    }
+    
+    .pgal-thumbnail-item {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .pgal-share-buttons {
+        grid-template-columns: 1fr;
+    }
+    
+    .pgal-notification {
+        right: 10px;
+        left: 10px;
+        transform: translateY(-100%);
+        max-width: none;
+    }
+    
+    .pgal-notification.pgal-show {
+        transform: translateY(0);
+    }
+    
+    /* Touch optimizations */
+    .pgal-btn {
+        min-width: 44px;
+        min-height: 44px;
+    }
+    
+    .pgal-zoom-controls,
+    .pgal-rotate-controls,
+    .pgal-playback-controls,
+    .pgal-social-controls,
+    .pgal-other-controls {
+        gap: 8px;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pgal-toolbar-bottom .pgal-zoom-controls,
+    .pgal-toolbar-bottom .pgal-rotate-controls {
+        display: none;
+    }
+    
+    .pgal-image-counter {
+        font-size: 14px;
+    }
+    
+    .pgal-other-controls .pgal-btn-compare,
+    .pgal-other-controls .pgal-btn-info {
+        display: none;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .pgal-lightbox *,
+    .pgal-lightbox *::before,
+    .pgal-lightbox *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    :root {
+        --pgal-bg-color: #000000;
+        --pgal-bg-opacity: 1;
+        --pgal-text-color: #ffffff;
+        --pgal-primary-color: #ffffff;
+        --pgal-button-hover: rgba(255, 255, 255, 0.3);
+    }
+    
+    .pgal-btn {
+        border: 1px solid currentColor;
+    }
+    
+    .pgal-info-panel,
+    .pgal-share-panel,
+    .pgal-help-panel {
+        border: 2px solid var(--pgal-text-color);
+    }
+}
+
+/* Print styles */
+@media print {
+    .pgal-lightbox {
+        display: none !important;
+    }
+}

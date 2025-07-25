@@ -38,6 +38,9 @@ class ProjectGallery {
     private $performance;
     private $social;
     private $search;
+    private $multilang;
+    private $advanced_lightbox;
+    private $animations;
     
     public function __construct() {
         // Load all advanced features
@@ -79,6 +82,9 @@ class ProjectGallery {
         require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-social.php';
         require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-search.php';
         require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-custom-fields.php';
+        require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-multilang.php';
+        require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-advanced-lightbox.php';
+        require_once PROJECT_GALLERY_PLUGIN_DIR . 'includes/class-animations.php';
     }
     
     /**
@@ -91,6 +97,9 @@ class ProjectGallery {
         $this->performance = new ProjectGalleryPerformance();
         $this->social = new ProjectGallerySocial();
         $this->search = new ProjectGallerySearch();
+        $this->multilang = new ProjectGalleryMultiLang();
+        $this->advanced_lightbox = new ProjectGalleryAdvancedLightbox();
+        $this->animations = new ProjectGalleryAnimations();
     }
     
     /**
@@ -1765,25 +1774,19 @@ class ProjectGallery {
     public function get_search() {
         return $this->search;
     }
+    
+    public function get_multilang() {
+        return $this->multilang;
+    }
+    
+    public function get_advanced_lightbox() {
+        return $this->advanced_lightbox;
+    }
+    
+    public function get_animations() {
+        return $this->animations;
+    }
 }
 
 // Plugin'i başlat
 $project_gallery_instance = new ProjectGallery();
-
-/**
- * Plugin aktivasyonu
- */
-register_activation_hook(__FILE__, 'project_gallery_activation');
-function project_gallery_activation() {
-    global $project_gallery_instance;
-    $project_gallery_instance->activate_plugin();
-}
-
-/**
- * Plugin deaktivasyonu
- */
-register_deactivation_hook(__FILE__, 'project_gallery_deactivation');
-function project_gallery_deactivation() {
-    global $project_gallery_instance;
-    $project_gallery_instance->deactivate_plugin();
-}
